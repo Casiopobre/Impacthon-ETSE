@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS  `codigoQR` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `token` VARCHAR(10) NOT NULL,
     `paciente` BIGINT UNSIGNED NOT NULL,
+    `usp` ENUM('login', 'editar') NOT NULL,
     CONSTRAINT `codigoqr_paciente_foreign` FOREIGN KEY (`paciente`) REFERENCES `Paciente`(`id`)
 );
 
