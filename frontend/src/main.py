@@ -1,11 +1,16 @@
 import flet as ft
 import cipher as cp
+import datetime
 import requests
 
 SERVER_IP = "143.47.54.76"
 
+# Colores
+COLOR_BG = '#F2F2F2'
+COLOR_BORDER = '#034C8C'
+
+
 def main(page: ft.Page):
-    page.title = "Basic Cipher/Decipher App"
     page.window_width = 640
     page.window_height = 480
     page.window_resizable = False
@@ -25,8 +30,6 @@ def main(page: ft.Page):
         botonTest
     )
 
-
-    
 
 ft.app(
     target = main,
