@@ -53,6 +53,7 @@ function getRecetas(request, response) {
           })
       } else {
         jsonRespuesta = {
+          correcto:1,
           recetas: [
             {
               nombre: "Paracetamol",
@@ -96,6 +97,7 @@ function autorizacionPWD(request, response) {
             if (await bcrypt.compare(passwd, results[0].passwd)) {
               let tokenLogin = generateAccessToken(dni)
               response.json({
+                correcto: 1,
                 "tokenLogin": tokenLogin
             });
             }
@@ -144,6 +146,7 @@ function autorizacionToken(request, response) {
                   dni=results[0].dni
                   let tokenLogin = generateAccessToken(dni)
                   response.json({
+                    correcto: 1,
                     "tokenLogin": tokenLogin
                   });
                 }
@@ -208,7 +211,7 @@ async function crearCuenta(request, response) {
                         });
                       } else {
                         response.json({
-                          correcto: 0,
+                          correcto: 1,
                           mensaje: "Cuenta creada",
                           token: token,
                         });
