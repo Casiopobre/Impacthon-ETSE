@@ -2,6 +2,7 @@ import flet as ft
 import cipher as cp
 import requests
 
+SERVER_IP = "143.47.54.76"
 
 def main(page: ft.Page):
     page.title = "Basic Cipher/Decipher App"
@@ -12,7 +13,7 @@ def main(page: ft.Page):
     page.margin = 48
 
     def button_clicked(e):    
-        texto.value=(requests.get("http://localhost:8080/test").json())
+        texto.value=(requests.get("http://"+ SERVER_IP +":8080/calendario").json())
         page.update()
 
     botonTest=ft.TextButton(text="Text button", on_click=button_clicked)
