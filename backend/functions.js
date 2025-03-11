@@ -1,4 +1,4 @@
-function makeid(length) {
+function maketoken(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -9,4 +9,4 @@ function makeid(length) {
     }
     return result;
 }
-module.exports=makeid
+module.exports=maketoken
