@@ -38,6 +38,7 @@ function checkTokenJWT(token, id) {
       token,
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
+        console.log(token_data)
         if (err || token_data != id) {
           return 0;
         } else {
