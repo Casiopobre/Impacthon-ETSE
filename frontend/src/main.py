@@ -1,5 +1,8 @@
 import flet as ft
 import cipher as cp
+import datetime
+import requests
+from calendario import Calendario
 import session_view
 import shared
 import homeP_view
@@ -8,7 +11,6 @@ import homeM_view
 # -----------------------------
 # Main Session View with Tabs
 # -----------------------------
-
 
 def main(page: ft.Page):
     page.adaptive = True
@@ -53,9 +55,11 @@ def main(page: ft.Page):
     # Set the route change handler.
     page.on_route_change = reroute
 
+
     if page.route == "/" and page.client_storage.get("sessionToken") == None:
         page.go("/session/login")
     else:
         page.go(page.route)
 
 ft.app(target=main)
+
