@@ -319,9 +319,11 @@ function getRecetas(request, response) {
             });
           } else {
             if (results.length > 0) {
+              console.log(results.length)
               let jsonRespuesta;
               let recetas;
               for (const recetaNum in results) {
+                console.log(recetaNum)
                 recetas = []
                 conexion.query(
                   "SELECT nombre FROM Medicamento WHERE id = ? ",
