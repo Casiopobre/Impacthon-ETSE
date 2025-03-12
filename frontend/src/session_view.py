@@ -13,11 +13,18 @@ def NormalLoginTab(page):
             text="Iniciar sesión",
             on_click=lambda e: sf.login(page, dni_field, password_field)
         )
-
+        register_button = ft.ElevatedButton(
+             text="Registrarse",
+             on_click=lambda e: page.go("/session/register")
+        )
         print("\n\n\n\n\n Hola \n\n\n\n\n")
 
         return ft.Column(
             [
+                ft.Row([
+                        register_button
+                    ],
+                    alignment=ft.MainAxisAlignment.END),
                 dni_field,
                 password_field,
                 login_button,

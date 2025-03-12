@@ -26,10 +26,15 @@ def main(page: ft.Page):
         elif page.route == "/homep":
             # View del home del paciente
             page.views.append(homeP_view.build_homeP_view(page))
-        elif page.route == "/homem":
+        elif page.route == ("/homem"):
             # View del home del paciente
             page.views.append(homeM_view.build_homeM_view(page))
-        
+        elif page.route == ("/homem/ges"):
+            # View del home del paciente
+            page.views.append(homeM_view.build_homeM_view(page))
+        elif page.route == ("/homem/an"):
+            # View del home del paciente
+            page.views.append(homeM_view.build_homeM_view(page))
         # elif page.route == "/mhome":
         #     # View del home de profesional sanitario
         # elif page.route == "/register": 
