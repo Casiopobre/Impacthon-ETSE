@@ -321,10 +321,10 @@ function getRecetas(request, response) {
             if (results.length > 0) {
               let recetas;
               for (const recetaNum in results) {
-                console.log(recetaNum)
+                recetas = []
                 conexion.query(
                   "SELECT nombre FROM Medicamento WHERE id = ? ",
-                  [recetaNum.id],
+                  results[recetaNum].id,
                   async function (error, resultsMed, fields) {
                     if (error) {
                       console.log("error")
@@ -341,11 +341,12 @@ function getRecetas(request, response) {
                         correcto: 1,
                         recetas: recetas,
                       };
-                      response.json(jsonRespuesta);
+                      
                     }
                   }
                 );
               }
+              response.json(jsonRespuesta);
             }
             response.json({
               correcto: 0,
