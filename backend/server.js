@@ -94,13 +94,6 @@ function autorizacionPWD(request, response) {
         }
       }
     );
-
-    jsonRespuesta = {
-      usuario: dni,
-      contraseña: passwd,
-      token: maketoken(8),
-    };
-    response.json(jsonRespuesta);
   }
 }
 
