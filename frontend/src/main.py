@@ -22,6 +22,7 @@ def main(page: ft.Page):
         "/homem",
         "/homem/ges",
         "/homem/an",
+        "/sintomas",
     ]
     
     session_token = page.client_storage.get("sessionToken")
@@ -40,6 +41,39 @@ def main(page: ft.Page):
                     del homeM_funcs.temp_patient_routes[route]
         return False
     
+
+    # Función para construir la vista de síntomas
+    def build_sintomas_view():
+        return ft.View(
+            route="/sintomas",
+            controls=[
+                ft.AppBar(
+                    title=ft.Text("Síntomas"),
+                    bgcolor=ft.colors.DEEP_ORANGE_800,
+                ),
+                ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
+                ft.GridView(
+                    controls=[
+                        ft.ElevatedButton("Dolor de cabeza", on_click=lambda e: print("Dolor de cabeza seleccionado")),
+                        ft.ElevatedButton("Fiebre", on_click=lambda e: print("Fiebre seleccionada")),
+                        ft.ElevatedButton("Tos", on_click=lambda e: print("Tos seleccionada")),
+                        ft.ElevatedButton("Cansancio", on_click=lambda e: print("Cansacio seleccionado")),
+                        ft.ElevatedButton("Dolor muscular", on_click=lambda e: print("Dolor muscular seleccionado")),
+                        ft.ElevatedButton("Mareos", on_click=lambda e: print("Mareos seleccionada")),
+                        ft.ElevatedButton("Náuseas", on_click=lambda e: print("Náuseas seleccionada")),
+                        ft.ElevatedButton("Vómito", on_click=lambda e: print("Vómito seleccionada")),
+                        ft.ElevatedButton("Diarrea", on_click=lambda e: print("Diarrea seleccionada")),
+                        ft.ElevatedButton("Estreñimiento", on_click=lambda e: print("Estreñimiento seleccionada")),
+                        ft.ElevatedButton("Congestión nasa", on_click=lambda e: print("Congestión nasal seleccionada")),
+                    ],
+                    max_extent=200,
+                    spacing=10,
+                    run_spacing=10,
+                )
+            ],
+        )
+
+
     # Función para manejar el cambio de ruta
     def reroute(e):
         page.views.clear()
@@ -57,6 +91,9 @@ def main(page: ft.Page):
             elif e.route == "/homep":
                 # View del home del paciente
                 page.views.append(homeP_view.build_homeP_view(page))
+            elif e.route == "/sintomas":
+                # View de selección de síntomas
+                page.views.append(build_sintomas_view())
             elif e.route.startswith("/homem"):
                 # View del home del médico
                 page.views.append(homeM_view.build_homeM_view(page))
