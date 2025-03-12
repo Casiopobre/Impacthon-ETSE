@@ -151,7 +151,8 @@ def build_homeP_view(page: ft.Page):
         controls=[
             ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor=ft.colors.DEEP_ORANGE_800),
             ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
-            medication_list,
+            #medication_list,
+            get_content_layout(),
         ],
     )
 
