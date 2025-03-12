@@ -356,6 +356,7 @@ function insertarRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
   if (tokenLogin) {
+    console.log(checkTokenJWT(tokenLogin,id))
     if(checkTokenJWT(tokenLogin,id)==1){
       arrayRecetas = request.body.recetas;
       for (const numReceta in arrayRecetas) {
