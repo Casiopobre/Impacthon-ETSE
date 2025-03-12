@@ -39,12 +39,14 @@ function checkTokenJWT(token, id) {
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
         console.log(token_data)
-        if ((token_data.id != id)) {
+        if (err) {
           console.log("token invalido")
           return 0;
         } else {
+          if((token_data.id == id)){
           console.log("token valido")
           return 1;
+          }
         }
       }
     );
