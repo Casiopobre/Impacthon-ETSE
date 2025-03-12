@@ -2,10 +2,10 @@ import flet as ft
 import session_funcs as sf
 import shared
 
+
 def GestionarPacienteTab(page):
     codigo_field = ft.TextField(label="Codigo del Paciente", width=280)
-    gestionar_button = ft.ElevatedButton(
-            text="Gestionar Paciente", width=200)
+    gestionar_button = ft.ElevatedButton(text="Gestionar Paciente", width=200)
     qr_button = ft.IconButton(icon=ft.icons.ACCESS_ALARM, width=70)
     return ft.Column(
         [
@@ -78,9 +78,9 @@ def build_homeM_view(page: ft.Page):
 
 
     def GestionClick(e):
-        page.go("/homem/ges")
+        page.go("/homem/ges", skip_route_change_event= True)
     def AnadirClick(e):
-        page.go("/homem/an")
+        page.go("/homem/an", skip_route_change_event= True)
 
 
     boton_ges = ft.TextButton(text="Gestionar Paciente",on_click= GestionClick)
@@ -89,11 +89,15 @@ def build_homeM_view(page: ft.Page):
         controls=[
             boton_ges,
             boton_an,
-            ft.IconButton(
+            ft.PopupMenuButton(
                 icon=ft.icons.DOUBLE_ARROW,
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
+                items = [
+                    ft.PopupMenuItem(text = "Cambiar perfil"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
             ),
             # ft.Spacer(),
             ft.Text(profile_name, color=ft.colors.WHITE, size=16),
