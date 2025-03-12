@@ -9,120 +9,84 @@ def build_homeP_view(page: ft.Page):
     """
     page.title = "Mi Medicación"
     
-    # Function to handle feeling button click
-    def open_feeling_dialog(e):
-        feeling_dialog = ft.AlertDialog(
-            title=ft.Text("¿Cómo te sientes?"),
-            content=ft.Column([
-                ft.TextField(label="blablabla")
-            ], tight=True, spacing=20),
-            actions=[
-            ft.ElevatedButton(
-                "Cancelar",
-                on_click=lambda e: setattr(feeling_dialog, "open", False)
-            ),
-            ft.ElevatedButton(
-                "Enviar",
-                on_click=lambda e: setattr(feeling_dialog, "open", False)
-            )
-            ]
-        )
-        page.dialog = feeling_dialog
-        feeling_dialog.open = True
-        page.update()
-        return 
-    # Top navigation bar
-    profile_name = "Juan Pérez"  # This would come from actual user data
+    # Función para abrir el cuadro de diálogo de sentimientos
+    # def open_feeling_dialog(e):
+    #     feeling_dialog = ft.AlertDialog(
+    #         title=ft.Text("¿Cómo te sientes?"),
+    #         content=ft.Column([
+    #             ft.TextField(label="Describe cómo te sientes")
+    #         ], tight=True, spacing=20),
+    #         actions=[
+    #             ft.ElevatedButton("Cancelar", on_click=lambda e: setattr(feeling_dialog, "open", False)),
+    #             ft.ElevatedButton("Enviar", on_click=lambda e: setattr(feeling_dialog, "open", False))
+    #         ]
+    #     )
+    #     page.dialog = feeling_dialog
+    #     feeling_dialog.open = True
+    #     page.update()
     
-    nav_bar = ft.Row(
-        controls=[
-            ft.IconButton(
-                icon=ft.icons.DOUBLE_ARROW,
-                icon_color=ft.colors.WHITE,
-                tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
-            ),
-            # ft.Spacer(),
-            ft.Text(profile_name, color=ft.colors.WHITE, size=16),
-            ft.Container(
-                content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=30, color=ft.colors.WHITE),
-                margin=ft.margin.only(left=10)
-            ),
-        ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+    # Botón para ir al menú de síntomas
+    def open_symptom_menu(e):
+        page.go("/sintomas")
+        page.update()
+
+    # Botón de sentimifentos
+    # feeling_button = ft.ElevatedButton(
+    #     "¿Cómo te sientes?",
+    #     icon=ft.icons.MOOD,
+    #     on_click=open_symptom_menu,
+    #     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
+    # )
+
+    # Botón para el menú de síntomas
+    symptoms_button = ft.ElevatedButton(
+        "Menú de Síntomas",
+        icon=ft.icons.HEALTH_AND_SAFETY,
+        on_click=open_symptom_menu,
+        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
     )
 
-    # Feeling button
-    feeling_button = ft.ElevatedButton(
-        "¿Cómo te sientes?",
-        icon=ft.icons.MOOD,
-        on_click=open_feeling_dialog,
-        style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            padding=ft.padding.all(15),
-        )
+    # Contenedor para botones en la parte superior
+    buttons_container = ft.Row(
+        controls=[symptoms_button],
+        alignment=ft.MainAxisAlignment.CENTER,
     )
 
-    # Medication list - this would typically be populated from a database
+    # Lista de medicamentos
     def get_medication_data():
-        # This would be replaced with an actual API call like sf.get_recetas(user_dni)
-        # For now, returning sample data
         return [
-            {"name": "Paracetamol", "dose": 500, "interval": 8, "image": "paracetamol.png"},
-            {"name": "Ibuprofeno", "dose": 400, "interval": 6, "image": "ibuprofeno.png"},
-            {"name": "Omeprazol", "dose": 20, "interval": 24, "image": "omeprazol.png"},
-            {"name": "Amoxicilina", "dose": 750, "interval": 12, "image": "amoxicilina.png"},
+            {"name": "Paracetamol", "dose": 500, "interval": 8},
+            {"name": "Ibuprofeno", "dose": 400, "interval": 6},
+            {"name": "Omeprazol", "dose": 20, "interval": 24},
+            {"name": "Amoxicilina", "dose": 750, "interval": 12},
         ]
 
-    # Function to create a medication card
     def create_medication_card(medication):
         return ft.Card(
             content=ft.Container(
                 content=ft.Row(
                     [
-                        # Left side - medication image
-                        ft.Container(
-                            content=ft.Icon(
-                                ft.icons.MEDICATION,
-                                size=40,
-                                color=ft.colors.BLUE_400,
-                            ),
-                            width=60,
-                            height=60,
-                            alignment=ft.alignment.center,
-                            bgcolor=ft.colors.BLUE_50,
-                            border_radius=ft.border_radius.all(10),
-                        ),
-                        
-                        # Right side - medication details
+                        ft.Icon(ft.icons.MEDICATION, size=40, color=ft.colors.BLUE_400),
                         ft.Column(
                             [
                                 ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16),
-                                ft.Text(f"Dosis: {medication['dose']} mg", size=14),
-                                ft.Text(f"Intervalo: Cada {medication['interval']} horas", size=14),
+                                ft.Text(f"Dosis: {medication['dose']} mg"),
+                                ft.Text(f"Intervalo: Cada {medication['interval']} horas"),
                             ],
                             spacing=5,
-                            alignment=ft.MainAxisAlignment.CENTER,
                         ),
-                    ],
-                    alignment=ft.MainAxisAlignment.START,
+                    ]
                 ),
                 padding=15,
             ),
             margin=ft.margin.only(bottom=10),
-            elevation=2,
         )
 
-    # Create medication list
     medication_list = ft.ListView(
-        spacing=10,
-        padding=20,
-        expand=True,
+        spacing=10, padding=20, expand=True
     )
     
-    # Populate medication list
-    medications = get_medication_data()
-    for medication in medications:
+    for medication in get_medication_data():
         medication_list.controls.append(create_medication_card(medication))
 
     # Container for the calendar 
@@ -185,21 +149,62 @@ def build_homeP_view(page: ft.Page):
     return ft.View(
         route="/home",
         controls=[
-            # AppBar with navigation
-            ft.AppBar(
-                title=ft.Text("Mi Medicación"),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
-                actions=[nav_bar],
-            ),
-            # Feeling button in a container
-            ft.Container(
-                content=feeling_button,
-                alignment=ft.alignment.center,
-                padding=ft.padding.only(top=20, bottom=10),
-            ),
-            # Main content (responsive)
-            get_content_layout(),
+            ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor=ft.colors.DEEP_ORANGE_800),
+            ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
+            medication_list,
         ],
     )
 
-# Update main.py to include this route
+
+def build_symptom_menu_view(page: ft.Page):
+    """
+    Construye la vista del menú de síntomas con opciones seleccionables.
+    """
+    page.title = "Menú de Síntomas"
+
+    symptoms = [
+        "Dolor de cabeza",
+        "Fiebre",
+        "Tos",
+        "Cansancio",
+        "Dolor muscular",
+        "Náuseas",
+        "Vómito",
+        "Diarrea",
+        "Estreñimiento",
+        "Mareos",
+        "Congestión nasal",
+    ]
+
+    symptom_checkboxes = [ft.Checkbox(label=s, value=False) for s in symptoms]
+
+    def return_to_home(e):
+        page.go("/home")
+        page.update()
+
+    return ft.View(
+        route="/sintomas",
+        controls=[
+            ft.AppBar(title=ft.Text("Selecciona tus síntomas"), bgcolor=ft.colors.DEEP_ORANGE_800),
+            ft.Column(symptom_checkboxes, spacing=10, padding=20),
+            ft.ElevatedButton("Volver", icon=ft.icons.ARROW_BACK, on_click=return_to_home),
+        ],
+    )
+
+
+def route_change(page: ft.Page):
+    """
+    Maneja la navegación entre las diferentes vistas.
+    """
+    page.views.clear()
+
+    if page.route == "/home":
+        page.views.append(build_homeP_view(page))
+    elif page.route == "/sintomas":
+        page.views.append(build_symptom_menu_view(page))
+
+    page.update()
+
+
+if __name__ == "__main__":
+    ft.app(target=route_change)
