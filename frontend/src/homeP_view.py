@@ -2,41 +2,18 @@ import flet as ft
 import session_funcs as sf
 import shared
 from calendario import Calendario
+from datetime import datetime
 
-def build_homeP_view(page: ft.Page):
+def build_homeP_view(page: ft.Page, calendario: Calendario):
     """
     Construye la vista principal del paciente con la lista de medicamentos y espacio para el calendario.
     """
     page.title = "Mi Medicación"
     
-    # Función para abrir el cuadro de diálogo de sentimientos
-    # def open_feeling_dialog(e):
-    #     feeling_dialog = ft.AlertDialog(
-    #         title=ft.Text("¿Cómo te sientes?"),
-    #         content=ft.Column([
-    #             ft.TextField(label="Describe cómo te sientes")
-    #         ], tight=True, spacing=20),
-    #         actions=[
-    #             ft.ElevatedButton("Cancelar", on_click=lambda e: setattr(feeling_dialog, "open", False)),
-    #             ft.ElevatedButton("Enviar", on_click=lambda e: setattr(feeling_dialog, "open", False))
-    #         ]
-    #     )
-    #     page.dialog = feeling_dialog
-    #     feeling_dialog.open = True
-    #     page.update()
-    
     # Botón para ir al menú de síntomas
     def open_symptom_menu(e):
         page.go("/sintomas")
         page.update()
-
-    # Botón de sentimifentos
-    # feeling_button = ft.ElevatedButton(
-    #     "¿Cómo te sientes?",
-    #     icon=ft.icons.MOOD,
-    #     on_click=open_symptom_menu,
-    #     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
-    # )
 
     # Botón para el menú de síntomas
     symptoms_button = ft.ElevatedButton(
@@ -90,8 +67,6 @@ def build_homeP_view(page: ft.Page):
         medication_list.controls.append(create_medication_card(medication))
 
     # Container for the calendar 
-    calendario = Calendario(page)
-
     calendar_container = ft.Container(
         content=(
             ft.Column(
@@ -157,55 +132,42 @@ def build_homeP_view(page: ft.Page):
     )
 
 
-def build_symptom_menu_view(page: ft.Page):
-    """
-    Construye la vista del menú de síntomas con opciones seleccionables.
-    """
-    page.title = "Menú de Síntomas"
+# Función para construir la vista de síntomas
+def build_sintomas_view(page: ft.Page, calendario: Calendario):
+    def on_sintoma_selected(e):
+        selected_date = calendario.current_date or datetime.now().date()
+        calendario.add_symptom(selected_date, e.control.text)
 
-    symptoms = [
-        "Dolor de cabeza",
-        "Fiebre",
-        "Tos",
-        "Cansancio",
-        "Dolor muscular",
-        "Náuseas",
-        "Vómito",
-        "Diarrea",
-        "Estreñimiento",
-        "Mareos",
-        "Congestión nasal",
-    ]
-
-    symptom_checkboxes = [ft.Checkbox(label=s, value=False) for s in symptoms]
-
-    def return_to_home(e):
-        page.go("/home")
-        page.update()
+        print(f"{e.control.text} añadido el {selected_date}")
+        
+        page.go("/homep")
 
     return ft.View(
         route="/sintomas",
         controls=[
-            ft.AppBar(title=ft.Text("Selecciona tus síntomas"), bgcolor=ft.colors.DEEP_ORANGE_800),
-            ft.Column(symptom_checkboxes, spacing=10, padding=20),
-            ft.ElevatedButton("Volver", icon=ft.icons.ARROW_BACK, on_click=return_to_home),
+            ft.AppBar(
+                title=ft.Text("Síntomas"),
+                bgcolor=ft.colors.DEEP_ORANGE_800,
+            ),
+            ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
+            ft.GridView(
+                controls=[
+                    ft.ElevatedButton("Dolor de cabeza", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Fiebre", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Tos", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Cansancio", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Dolor muscular", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Mareos", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Náuseas", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Vómito", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Diarrea", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Estreñimiento", on_click=on_sintoma_selected),
+                    ft.ElevatedButton("Congestión nasal", on_click=on_sintoma_selected),
+                ],
+                max_extent=200,
+                spacing=10,
+                run_spacing=10,
+            )
         ],
     )
 
-
-def route_change(page: ft.Page):
-    """
-    Maneja la navegación entre las diferentes vistas.
-    """
-    page.views.clear()
-
-    if page.route == "/home":
-        page.views.append(build_homeP_view(page))
-    elif page.route == "/sintomas":
-        page.views.append(build_symptom_menu_view(page))
-
-    page.update()
-
-
-if __name__ == "__main__":
-    ft.app(target=route_change)
