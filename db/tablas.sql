@@ -4,19 +4,24 @@ USE `pastillero`;
 -- DROP TABLE IF EXISTS `ProfesionalPaciente`;  
 
 -- ============================================================
--- 1. Tabla de Pacientes
+-- 1. Tabla de Usuarios (Pacientes y Profesionales Sanitarios)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS `Usuario` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `dni` VARCHAR(9) NOT NULL,
-    `edad` INT UNSIGNED NOT NULL,
-    `nombre` TEXT NOT NULL,
-    `apellido1` TEXT NOT NULL,
-    `apellido2` TEXT NULL,
+    `tipo` ENUM('paciente', 'medico') NOT NULL DEFAULT 'paciente',
+    `email` VARCHAR(255),
+    `edad` INT UNSIGNED,
+    `nombre_completo` TEXT NOT NULL,
     `passwd` LONGTEXT NOT NULL,
+<<<<<<< HEAD
+    `num_tlf` INT,
+    `profesional_responsable` BIGINT UNSIGNED,  -- Profesional responsable (FK para pacientes)
+=======
     `num_tlf` INT NOT NULL,
     `profesional_responsable` BIGINT UNSIGNED,  -- Profesional responsable (FK)
     `tipo_usuario` ENUM('paciente', 'medico') NOT NULL,
+>>>>>>> f53a58063cd937e944eb3fd16f4414431e04cdd7
     UNIQUE KEY (`dni`)
 );
 
@@ -30,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `Opciones` (
     `interfaz_guiada` BOOLEAN NOT NULL DEFAULT 0,
     `nivel_recordatorios` INT NOT NULL DEFAULT 2,
     UNIQUE KEY (`id_paciente`),
-    CONSTRAINT `opciones_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`)
+    CONSTRAINT `opciones_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Usuario`(`id`)
 );
 
 -- ============================================================
@@ -41,7 +46,7 @@ CREATE TABLE IF NOT EXISTS  `codigoQR` (
     `token` VARCHAR(10) NOT NULL,
     `paciente` BIGINT UNSIGNED NOT NULL,
     `usp` ENUM('login', 'editar') NOT NULL,
-    CONSTRAINT `codigoqr_paciente_foreign` FOREIGN KEY (`paciente`) REFERENCES `Paciente`(`id`)
+    CONSTRAINT `codigoqr_paciente_foreign` FOREIGN KEY (`paciente`) REFERENCES `Usuario`(`id`)
 );
 
 -- ============================================================
@@ -93,22 +98,7 @@ CREATE TABLE IF NOT EXISTS `Receta` (
     `fecha_fin` DATE NOT NULL,
     `dosificacion` INT NOT NULL,
     `intervalos_dosificacion` INT NOT NULL,
-    CONSTRAINT `receta_id_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`),
-    CONSTRAINT `receta_id_medicamento_foreign` FOREIGN KEY (`id_medicamento`) REFERENCES `Medicamento`(`id`)
-);
-
--- ============================================================
--- 6. Tabla de Recetas (Relación: Paciente - Medicamento)
--- ============================================================
-CREATE TABLE IF NOT EXISTS `Receta` (
-    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `id_paciente` BIGINT UNSIGNED NOT NULL,
-    `id_medicamento` BIGINT UNSIGNED NOT NULL,
-    `fecha_emision` DATE NOT NULL,
-    `fecha_fin` DATE NOT NULL,
-    `dosificacion` INT NOT NULL,
-    `intervalos_dosificacion` INT NOT NULL,
-    CONSTRAINT `receta_id_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`),
+    CONSTRAINT `receta_id_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Usuario`(`id`),
     CONSTRAINT `receta_id_medicamento_foreign` FOREIGN KEY (`id_medicamento`) REFERENCES `Medicamento`(`id`)
 );
 
@@ -120,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `Sintomatologia` (
     `id_paciente` BIGINT UNSIGNED NOT NULL,
     `fecha` DATE NOT NULL,
     `sintomas` TEXT NOT NULL,
-    CONSTRAINT `sintomatologia_id_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`),
+    CONSTRAINT `sintomatologia_id_paciente_foreign` FOREIGN KEY (`id_paciente`) REFERENCES `Usuario`(`id`),
     UNIQUE KEY `unique_sintomatologia` (`id_paciente`, `fecha`)
 );
 
@@ -140,8 +130,17 @@ CREATE TABLE IF NOT EXISTS `Sintomatologia` (
 -- ============================================================
 -- 9. Relaciones adicionales
 -- ============================================================
+<<<<<<< HEAD
+
+-- En Paciente, el campo profesional_responsable es obligatorio para la existencia del registro
+ALTER TABLE `Usuario`
+    ADD CONSTRAINT `paciente_profesional_responsable_foreign`
+    FOREIGN KEY (`profesional_responsable`) REFERENCES `Usuario`(`id`);
+
+=======
+>>>>>>> f53a58063cd937e944eb3fd16f4414431e04cdd7
 -- (Opcional) Si se desea agregar índices para optimizar consultas:
-ALTER TABLE `Paciente` ADD INDEX `paciente_profesional_responsable_index` (`profesional_responsable`);
+ALTER TABLE `Usuario` ADD INDEX `paciente_profesional_responsable_index` (`profesional_responsable`);
 ALTER TABLE `Receta` ADD INDEX `receta_id_paciente_index` (`id_paciente`);
 ALTER TABLE `Receta` ADD INDEX `receta_id_medicamento_index` (`id_medicamento`);
 ALTER TABLE `Sintomatologia` ADD INDEX `sintomatologia_id_paciente_index` (`id_paciente`);
