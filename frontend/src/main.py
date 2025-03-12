@@ -1,8 +1,9 @@
 import flet as ft
 import cipher as cp
-import session_view as session_view
+import session_view
 import shared
-
+import homeP_view
+import homeM_view
 
 # -----------------------------
 # Main Session View with Tabs
@@ -18,13 +19,17 @@ def main(page: ft.Page):
         page.views.clear()
 
         if page.route.startswith("/session"):
-            print("\n\n\n\n\n\n\n Rerouting to SESSION view \n\n\n\n\n\n\n")        
+            print("\n\n\n\n\n\n\n Rerouting to session view \n\n\n\n\n\n\n")        
             page.views.append(session_view.build_view(page))
 
 
-        elif page.route.startswith("/home"):
-            print("\n\n\n\n\n\n\n Rerouting to HOME view \n\n\n\n\n\n\n")        
-            page.views.append(shared.PHomeView(page))
+        elif page.route == "/homep":
+            # View del home del paciente
+            page.views.append(homeP_view.build_homeP_view(page))
+        elif page.route == "/homem":
+            # View del home del paciente
+            page.views.append(homeM_view.build_homeM_view(page))
+        
         # elif page.route == "/mhome":
         #     # View del home de profesional sanitario
         # elif page.route == "/register": 
