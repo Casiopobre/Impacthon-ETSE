@@ -333,18 +333,19 @@ function getRecetas(request, response) {
                       console.log("error")
                     } else {
                       recetas[recetaNum] = {
-                        nombre: resultsMed[0],
+                        nombre: resultsMed[0].nombre,
                         fechaEmision: results[recetaNum].fecha_emision,
                         fechaFin: results[recetaNum].fecha_fin,
                         dosificacion: results[recetaNum].dosificacion,
                         intervalosDosificacion:
                           results[recetaNum].intervalos_dosificacion,
                       };
-                      console.log(recetas[0])
+                      
                       jsonRespuesta = {
                         correcto: 1,
                         recetas: recetas,
                       };
+                      console.log(jsonRespuesta)
                       
                     }
                   }
