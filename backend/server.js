@@ -39,9 +39,9 @@ function checkTokenJWT(token, id) {
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
         if (err || token_data != id) {
-          return 1;
-        } else {
           return 0;
+        } else {
+          return 1;
         }
       }
     );
