@@ -18,13 +18,7 @@ COLOR_TEXT = '#000000'
 
 class Calendario:
 
-    def __init__(self, page: ft.Page):
-        self.page = page
-        self.page.title = 'Calendario'
-        self.page.horizontal_alignment = "center"
-        self.page.vertical_alignment = "center"
-        self.page.padding = 20
-
+    def __init__(self):
         self.current_date = datetime.now()
         self.CALENDAR_HEADER = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"]
 
@@ -52,7 +46,7 @@ class Calendario:
             alignment="center"
         )
         
-        calendar_container = ft.Container(
+        self.calendar_container = ft.Container(
             content=self.calendar_grid,
             expand=False,
             padding=5,
@@ -62,7 +56,8 @@ class Calendario:
             width=7 * 50 + 6 * 5  
         )
         
-        self.page.add(self.navigation_row, calendar_container)
+    def get_calendar_view(self):
+        return self.calendar_container
 
     def update_calendar(self):
         self.header_text.value = self.current_date.strftime("%B %Y")
@@ -142,10 +137,5 @@ class Calendario:
         self.update_calendar()
 
 
-
-def main(page: ft.Page):
-    Calendario(page)
-
-ft.app(target=main)
 
     

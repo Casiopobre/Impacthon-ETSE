@@ -1,6 +1,7 @@
 import flet as ft
 import session_funcs as sf
 import shared
+from calendario import Calendario
 
 def build_homeP_view(page: ft.Page):
     """
@@ -124,23 +125,13 @@ def build_homeP_view(page: ft.Page):
     for medication in medications:
         medication_list.controls.append(create_medication_card(medication))
 
-    # Container for the calendar (to be implemented later)
+    # Container for the calendar 
+    calendario = Calendario()
+
     calendar_container = ft.Container(
-        content=ft.Column(
-            [
-                ft.Text("Calendario", size=20, weight=ft.FontWeight.BOLD),
-                ft.Container(
-                    content=ft.Text("El calendario se mostrará aquí"),
-                    alignment=ft.alignment.center,
-                    height=300,
-                    border=ft.border.all(1, ft.colors.GREY_400),
-                    border_radius=10,
-                    padding=20,
-                ),
-            ]
-        ),
+        content=calendario.get_calendar_view(),
         padding=20,
-        expand=True,
+        expand=False
     )
 
     # Main content layout - responsive
