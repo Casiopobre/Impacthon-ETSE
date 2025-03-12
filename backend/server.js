@@ -41,47 +41,11 @@ app.post("/authPWD", autorizacionPWD);
 app.post("/authToken", autorizacionToken);
 app.post("/createActMedico", crearCuentaMedico);
 app.post("/createAct", crearCuenta);
-app.post("/insertarRecetas", crearCuenta);
+app.post("/insertarRecetas", insertarRecetas);
 
 //-------------  FUNCIONES  -------------
 //Funciones get
-function getRecetas(request, response) {
-  let tokenLogin = document.body.tokenLogin;
-  if (tokenLogin) {
-    jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET,
-      function (err, token_data) {
-        if (err) {
-          response.json({
-            correcto: 0,
-          });
-        } else {
-          jsonRespuesta = {
-            correcto: 1,
-            recetas: [
-              {
-                nombre: "Paracetamol",
-                inicio: "16/03/2025",
-                fin: "21/03/2025",
-                dosis: 7,
-                intervalos: 8,
-              },
-              {
-                nombre: "Ibuprofeno",
-                inicio: "12/03/2025",
-                fin: "17/03/2025",
-                dosis: 4,
-                intervalos: 12,
-              },
-            ],
-          };
-          response.json(jsonRespuesta);
-        }
-      }
-    );
-  }
-}
+
 //Funciones post
 function autorizacionPWD(request, response) {
   dni = request.body.dni;
@@ -99,12 +63,13 @@ function autorizacionPWD(request, response) {
           });
         } else {
           if (results.length > 0) {
+            id = results[0].id;
             if (await bcrypt.compare(passwd, results[0].passwd)) {
-              let tokenLogin = generateAccessToken(dni);
+              let tokenLogin = generateAccessToken(id);
               response.json({
                 correcto: 1,
                 tokenLogin: tokenLogin,
-                id:results[0].id
+                id: results[0].id,
               });
             }
           }
@@ -122,7 +87,7 @@ function autorizacionPWD(request, response) {
 }
 
 function autorizacionToken(request, response) {
-  let tokenLogin = document.body.tokenLogin;
+  let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
     conexion.query(
       "SELECT * FROM CodigoQR WHERE token = ? ",
@@ -149,12 +114,12 @@ function autorizacionToken(request, response) {
                   });
                 } else {
                   if (results.length > 0) {
-                    dni = results[0].dni;
-                    let tokenLogin = generateAccessToken(dni);
+                    id = results[0].id;
+                    let tokenLogin = generateAccessToken(id);
                     response.json({
                       correcto: 1,
                       tokenLogin: tokenLogin,
-                      id:results[0].id
+                      id: results[0].id,
                     });
                   }
                 }
@@ -245,7 +210,7 @@ async function crearCuentaMedico(request, response) {
                   token = maketoken(10);
                   conexion.query(
                     "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
-                    [token, id,'login'],
+                    [token, id, "login"],
                     async function (error) {
                       if (error) {
                         console.log(error);
@@ -277,7 +242,111 @@ async function crearCuentaMedico(request, response) {
   }
 }
 
+function getRecetas(request, response) {
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (tokenLogin) {
+    jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, token_data) {
+        if (err || token_data != id) {
+          response.json({
+            correcto: 0,
+          });
+        } else {
+          conexion.query(
+            "SELECT * FROM Receta WHERE id_paciente = ? ",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              } else {
+                if (results.length > 0) {
+                  let recetas;
+                  for (const recetaNum in results) {
+                    conexion.query(
+                      "SELECT nombre FROM Medicamento WHERE id = ? ",
+                      [recetaNum.id],
+                      async function (error, resultsMed, fields) {
+                        if (error) {
+                        } else {
+                          recetas[recetaNum] = {
+                            nombre:resultsMed[0],
+                            fechaEmision:results[recetaNum].fecha_emision,
+                            fechaFin:results[recetaNum].fecha_fin,
+                            dosificacion:results[recetaNum].dosificacion,
+                            intervalosDosificacion:results[recetaNum].intervalos_dosificacion
+                          };
+                          jsonRespuesta = {
+                            correcto: 1,
+                            recetas: recetas,
+                          };
+                          response.json(jsonRespuesta);
+                        }})                    
+                  }                
+                }
+                response.json({
+                  correcto: 0,
+                  mensaje: "Este paciente no tiene recetas",
+                });
+              }
+            }
+          );
+        }
+      }
+    );
+  }
+}
 
+function insertarRecetas(request, response) {
+  let tokenLogin = request.body.tokenLogin;
+  if (tokenLogin) {
+    wt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, token_data) {
+        if (err || token_data != id) {
+          response.json({
+            correcto: 0,
+          });
+        } else {
+          arrayRecetas = request.body.recetas;
+          for (const numReceta in arrayRecetas) {
+            receta = arrayRecetas[numReceta];
+            conexion.query(
+              "INSERT into Receta (id_paciente,id_medicamento,fecha_emision,fecha_fin,dosificacion,intervalos_dosificacion) values(?,?,?,?,?,?)",
+              [
+                receta.idPaciente,
+                receta.idMedicamento,
+                receta.fechaEmision,
+                receta.fechaFin,
+                receta.dosificacion,
+                receta.intervalosDosificacion,
+              ],
+              async function (error) {
+                if (error) {
+                  response.json({
+                    correcto: 0,
+                    mensaje: error.message,
+                  });
+                }
+              }
+            );
+          }
+          response.json({
+            correcto: 1,
+            mensaje: "Recetas insertadas correctamente",
+          });
+        }
+      }
+    );
+  }
+}
 
 // app.del('/', function(req, res) {
 //   res.json({ mensaje: 'Método delete' })
