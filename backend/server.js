@@ -105,6 +105,12 @@ function autorizacionPWD(request, response) {
         }
       }
     );
+  }else{
+  response.json({
+            correcto: 0,
+            mensaje: "Faltan campos",
+          });
+    
   }
 }
 
