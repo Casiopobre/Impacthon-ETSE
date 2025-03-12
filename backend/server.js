@@ -87,7 +87,13 @@ function autorizacionPWD(request, response) {
           if (results.length > 0) {
             id = results[0].id;
             if (await bcrypt.compare(passwd, results[0].passwd)) {
-              let tokenLogin = generateAccessToken(id);
+              let tokenLogin = generateAccessToken(id); 
+              console.log({
+                correcto: 1,
+                tokenLogin: tokenLogin,
+                id: results[0].id,
+                tipoUsuario: results[0].tipoUsuario,
+              })
               response.json({
                 correcto: 1,
                 tokenLogin: tokenLogin,
