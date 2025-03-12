@@ -95,8 +95,8 @@ def main(page: ft.Page):
             elif e.route == "/homep":
                 # View del home del paciente
                 page.views.append(homeP_view.build_homeP_view(page))
-            #elif e.route == "/sintomas":
-                
+            elif e.route == "/sintomas":
+                page.views.append(build_sintomas_view())
             elif e.route.startswith("/homem"):
                 # View del home del médico
                 page.views.append(homeM_view.build_homeM_view(page))
@@ -113,7 +113,7 @@ def main(page: ft.Page):
                 #     ]
                 # )
                 # page.views.append(default_view)
-                # HAY QUE CAMBIAR ESTO !!!!!!!!!!!!!!!!!
+                # !HAY QUE CAMBIAR ESTO !!!!!!!!!!!!!!!!!
                 page.go("/session/login")
         else:
             if not session_token:
