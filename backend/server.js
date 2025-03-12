@@ -305,73 +305,67 @@ async function crearCuentaMedico(request, response) {
 function getRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
-  if (tokenLogin) {
-    if (checkTokenJWT(tokenLogin, id)) {
-      conexion.query(
-        "SELECT * FROM Receta WHERE id_paciente = ? ",
-        [id],
-        async function (error, results, fields) {
-          if (error) {
-            console.log(error);
-            response.json({
-              correcto: 0,
-              mensaje: error.message,
-            });
-          } else {
-            if (results.length > 0) {
-              console.log(results.length)
-              let jsonRespuesta;
-              let recetas;
-              for (const recetaNum in results) {
-                console.log(recetaNum)
-                recetas = []
-                conexion.query(
-                  "SELECT nombre FROM Medicamento WHERE id = ? ",
-                  results[recetaNum].id,
-                  async function (error, resultsMed, fields) {
-                    if (error) {
-                      console.log("error")
-                    } else {
-                      recetas[recetaNum] = {
-                        nombre: resultsMed[0].nombre,
-                        fechaEmision: results[recetaNum].fecha_emision,
-                        fechaFin: results[recetaNum].fecha_fin,
-                        dosificacion: results[recetaNum].dosificacion,
-                        intervalosDosificacion:
-                          results[recetaNum].intervalos_dosificacion,
-                      };
-                      
-                      jsonRespuesta = {
-                        correcto: 1,
-                        recetas: recetas,
-                      };
-                      console.log(jsonRespuesta)
-                      
-                    }
-                  }
-                );
-              }
-              console.log(recetas)
-              response.json(jsonRespuesta);
-            }else{
-            response.json({
-              correcto: 0,
-              mensaje: "Este paciente no tiene recetas",
-            });
-          }}
-        }
-      );
-    } else {
-      response.json({
-        correcto: 0,
-      });
-    }
-  }else{
-    response.json({
-      correcto: 0,
-    });
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
   }
+
+  conexion.query(
+    "SELECT * FROM Receta WHERE id_paciente = ?",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      }
+
+      if (results.length === 0) {
+        return response.json({
+          correcto: 0,
+          mensaje: "Este paciente no tiene recetas",
+        });
+      }
+
+      try {
+        const recetas = await Promise.all(results.map(async (receta) => {
+          const [medicamento] = await new Promise((resolve, reject) => {
+            conexion.query(
+              "SELECT nombre FROM Medicamento WHERE id = ?",
+              [receta.id_medicamento],
+              (error, resultsMed) => {
+                if (error) reject(error);
+                else resolve(resultsMed);
+              }
+            );
+          });
+
+          return {
+            nombre: medicamento ? medicamento.nombre : 'Desconocido',
+            fechaEmision: receta.fecha_emision,
+            fechaFin: receta.fecha_fin,
+            dosificacion: receta.dosificacion,
+            intervalosDosificacion: receta.intervalos_dosificacion,
+          };
+        }));
+
+        response.json({
+          correcto: 1,
+          recetas: recetas,
+        });
+      } catch (err) {
+        console.error(err);
+        response.json({
+          correcto: 0,
+          mensaje: "Error al procesar las recetas",
+        });
+      }
+    }
+  );
 }
+
 
 function insertarRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
