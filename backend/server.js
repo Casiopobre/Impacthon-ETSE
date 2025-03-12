@@ -348,12 +348,12 @@ function getRecetas(request, response) {
                 );
               }
               response.json(jsonRespuesta);
-            }
+            }else{
             response.json({
               correcto: 0,
               mensaje: "Este paciente no tiene recetas",
             });
-          }
+          }}
         }
       );
     } else {
