@@ -405,6 +405,7 @@ function insertarSintomas(request, response) {
   let sintomas = request.body.sintomas;
   if (tokenLogin) {
     if(checkTokenJWT(tokenLogin,id)){
+      console.log("Enter")
       conexion.query(
         "INSERT into Sintomatologia (id_paciente,fecha,sintomas) values(?,?,?)",
         [
