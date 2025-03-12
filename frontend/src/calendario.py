@@ -143,9 +143,4 @@ class Calendario:
 
 
 
-def main(page: ft.Page):
-    Calendario(page)
-
-ft.app(target=main)
-
     
