@@ -154,7 +154,7 @@ function autorizacionToken(request, response) {
 async function crearCuenta(request, response) {
   dni = request.body.dni;
   passwd = request.body.passwd;
-  edad = request.body.edad;
+  fecha = request.body.fecha;
   nombreCompleto = request.body.nombreCompleto;
   num_tlf = request.body.num_tlf;
   let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
@@ -162,10 +162,10 @@ async function crearCuenta(request, response) {
   // Aqui hay que añadir una comprobacion de que el usuario no exista ya
   // ni en paciente ni en medico, con DNI, supongo que valdrá
 
-  if (dni && passwd && edad && nombreCompleto && num_tlf) {
+  if (dni && passwd && fecha && nombreCompleto && num_tlf) {
     conexion.query(
-      "INSERT into Usuario (dni,edad,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
-      [dni, edad, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
+      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+      [dni, fecha, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
       async function (error) {
         if (error) {
           response.json({
@@ -207,17 +207,17 @@ async function crearCuentaMedico(request, response) {
           if (results > 0) {
             dni = request.body.dni;
             passwd = request.body.passwd;
-            edad = request.body.edad;
+            fecha = request.body.fecha;
             nombreCompleto = request.body.nombreCompleto;
             num_tlf = request.body.num_tlf;
             let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
 
             if (dni && passwd && edad && nombreCompleto && num_tlf) {
               conexion.query(
-                "INSERT into Usuario (dni,edad,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
                 [
                   dni,
-                  edad,
+                  fecha,
                   nombreCompleto,
                   encryptedPasswd,
                   num_tlf,
