@@ -386,6 +386,7 @@ function insertarRecetas(request, response) {
     }else{
       response.json({
         correcto: 0,
+        mensaje:"No va"
       });
     }
   }
