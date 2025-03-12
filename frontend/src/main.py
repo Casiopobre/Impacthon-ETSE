@@ -1,35 +1,56 @@
 import flet as ft
 import cipher as cp
-import requests
+import session_view as session_view
+import shared
 
-SERVER_IP = "143.47.54.76"
+
+# -----------------------------
+# Main Session View with Tabs
+# -----------------------------
+
 
 def main(page: ft.Page):
-    page.title = "Basic Cipher/Decipher App"
-    page.window_width = 640
-    page.window_height = 480
-    page.window_resizable = False
-    page.padding = 48
-    page.margin = 48
+    page.adaptive = True
+    page.title = "Iniciar sesión"
 
-    def button_clicked(e):    
-        texto.value=(requests.get("http://"+ SERVER_IP +":8080/calendario").json())
+    # Función para manejar el cambio de ruta
+    def reroute(e):
+        page.views.clear()
+
+        if page.route.startswith("/session"):
+            print("\n\n\n\n\n\n\n Rerouting to SESSION view \n\n\n\n\n\n\n")        
+            page.views.append(session_view.build_view(page))
+
+
+        elif page.route.startswith("/home"):
+            print("\n\n\n\n\n\n\n Rerouting to HOME view \n\n\n\n\n\n\n")        
+            page.views.append(shared.PHomeView(page))
+        # elif page.route == "/mhome":
+        #     # View del home de profesional sanitario
+        # elif page.route == "/register": 
+        #     # View del registro de usuario
+
+        else:
+            # Default view (for example, a Home page)
+            default_view = ft.View(
+                "/",
+                controls=[
+                    ft.AppBar(
+                        title=ft.Text("Home", size=32), 
+                        bgcolor=ft.Colors.DEEP_ORANGE_800,
+                    ),
+                    ft.Text("Welcome to the Home Page", size=32)
+                ]
+            )
+            page.views.append(default_view)
         page.update()
 
-    botonTest=ft.TextButton(text="Text button", on_click=button_clicked)
-    texto=ft.Text("Size 70, w900, selectable", size=70, weight=ft.FontWeight.W_900, selectable=True)
+    # Set the route change handler.
+    page.on_route_change = reroute
 
+    if page.route == "/" and page.client_storage.get("sessionToken") == None:
+        page.go("/session/login")
+    else:
+        page.go(page.route)
 
-    page.add(
-        texto,
-        botonTest
-    )
-
-
-    
-
-ft.app(
-    target = main,
-    #view = ft.WEB_BROWSER,
-)
-    
+ft.app(target=main)

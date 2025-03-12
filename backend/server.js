@@ -177,6 +177,9 @@ async function crearCuenta(request, response) {
   num_tlf = request.body.num_tlf;
   let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
 
+  // Aqui hay que añadir una comprobacion de que el usuario no exista ya
+  // ni en paciente ni en medico, con DNI, supongo que valdrá
+
   if (dni && passwd && edad && nombre && apellido1 && apellido2 && num_tlf) {
     conexion.query(
       "INSERT into Paciente (dni,edad,nombre,apellido1,apellido2,passwd,num_tlf) values(?,?,?,?,?,?,?)",
