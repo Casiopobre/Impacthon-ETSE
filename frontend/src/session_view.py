@@ -8,43 +8,40 @@ def NormalLogin(page):
         
         otp_button = ft.ElevatedButton(
             text="Inicio de sesión con código de un solo uso",
-            on_click=lambda e: page.go("/session/otplogin")
+            on_click=lambda _: page.go("/session/otplogin")
         )
 
         login_button = ft.ElevatedButton(
             text="Iniciar sesión",
-            on_click=lambda e: sf.login(page, dni_field, password_field)
+            on_click=lambda _: sf.login(page, dni_field, password_field)
         )
 
-        login_button = ft.ElevatedButton(
+        register_button = ft.ElevatedButton(
             text="Registrarse",
-            on_click=lambda e: page.go("/session/register")
+            on_click=lambda _: page.go("/session/register")
         )
 
         print("\n\n estás en login \n\n")
 
         return ft.Column(
-            ft.Row(
-                ft.ElevatedButton(
-                    text="Iniciar sesión",
-                    url="/session/login"),
-                ft.ElevatedButton(
-                    text="Registrarse",
-                     url="/session/register")
-            ),
-            ft.Row(
             [
-                dni_field,
-                password_field,
-                login_button,
-                otp_button
-            ],
-            ),
+                ft.Row([
+                    login_button,
+                    register_button
+                ]),
+                ft.Row([
+                    dni_field,
+                    password_field,
 
+                ]),
+                ft.Row([                    
+                    login_button,
+                    otp_button
+                ]),
+            ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20            
-
+            spacing=20
         )
 
 

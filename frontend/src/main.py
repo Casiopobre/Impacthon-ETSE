@@ -20,15 +20,15 @@ def main(page: ft.Page):
     def reroute(e):
         page.views.clear()
 
-        if page.route.startswith("/session"):
+        if e.route.startswith("/session"):
             print("\n\n\n\n\n\n\n Rerouting to session view \n\n\n\n\n\n\n")        
             page.views.append(session_view.build_view(page))
 
 
-        elif page.route == "/homep":
+        elif e.route == "/homep":
             # View del home del paciente
             page.views.append(homeP_view.build_homeP_view(page))
-        elif page.route == "/homem":
+        elif e.route == "/homem":
             # View del home del paciente
             page.views.append(homeM_view.build_homeM_view(page))
         
