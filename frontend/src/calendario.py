@@ -1,138 +1,151 @@
+import locale
 import flet as ft
-import datetime
+from datetime import datetime
 import calendar
-from calendar import HTMLCalendar
-from dateutil import relativedelta
 
-'''
-Basado en una clase creada por:
-C. Nichols <mohawke@gmail.com>
-'''
+# Configuracion do idioma
+locale.setlocale(locale.LC_ALL, '')
+# locale.setlocale(locale.LC_TIME, 'es_ES')  # Para Windows
 
-# Colors
 
-class Calendar():
+# Colores
+COLOR_BG = '#F2F2F2'
+COLOR_BORDER = '#034C8C'
+COLOR_CURR_DAY = '#95C1DA'
+COLOR_BG_SEC = '#456173'
+COLOR_TEXT = '#000000'
 
-    def __init__(self, page):
-        super().__init__()
 
+class Calendario:
+
+    def __init__(self, page: ft.Page):
         self.page = page
-        self.get_current_date()
-        self.set_theme()
+        self.page.title = 'Calendario'
+        self.page.horizontal_alignment = "center"
+        self.page.vertical_alignment = "center"
+        self.page.padding = 20
 
-        self.calendar_container = ft.Container(
-            width=350, height=300, 
-            padding=ft.padding.all(2), 
-            border=ft.border.all(2, self.border_color),
-            border_radius=ft.border_radius.all(5),
-            alignment=ft.alignment.bottom_center
+        self.current_date = datetime.now()
+        self.CALENDAR_HEADER = ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"]
+
+        self.header_text = ft.Text(size=20, weight="bold", text_align="center")
+        self.calendar_grid = ft.GridView(
+            expand=False,
+            runs_count=7, # Columnas
+            max_extent=50,
+            child_aspect_ratio=1, # Relacion de aspecto
+            spacing=5,
+            run_spacing=5,
+            width=7 * 50 + 6 * 5 
+        )
+
+        self._build_ui()
+        self.update_calendar()
+
+    def _build_ui(self):
+        self.navigation_row = ft.Row(
+            [
+                ft.IconButton(ft.icons.ARROW_BACK, on_click=self.prev_month),
+                self.header_text,
+                ft.IconButton(ft.icons.ARROW_FORWARD, on_click=self.next_month),
+            ],
+            alignment="center"
+        )
+        
+        calendar_container = ft.Container(
+            content=self.calendar_grid,
+            expand=False,
+            padding=5,
+            border=ft.border.all(2, COLOR_BORDER),
+            border_radius=5,
+            bgcolor=COLOR_BG,
+            width=7 * 50 + 6 * 5  
+        )
+        
+        self.page.add(self.navigation_row, calendar_container)
+
+    def update_calendar(self):
+        self.header_text.value = self.current_date.strftime("%B %Y")
+        cal = calendar.monthcalendar(self.current_date.year, self.current_date.month)
+
+        self.calendar_grid.controls.clear()
+
+        for day in self.CALENDAR_HEADER:
+            self.calendar_grid.controls.append(
+                ft.Container(
+                    content=ft.Text(day, weight="bold", text_align="center", color=COLOR_BG),
+                    alignment=ft.alignment.center,
+                    padding=5,
+                    border_radius=5,
+                    border=ft.border.all(1, COLOR_BORDER),
+                    bgcolor=COLOR_BORDER
+                )
             )
-        
-        self.build()
-        self.output=ft.Text() # Selected date
 
-    def get_current_date(self):
-        today = datetime.datetime.now()
-        self.current_day = today.day
-        self.current_month = today.month
-        self.current_year = today.year
-
-    def set_theme(self, border_color, text_color, curr_day_color):
-        self.border_color = border_color
-        self.text_color = text_color
-        self.curr_day_color = curr_day_color
-
-    def get_calendar(self):
-        return HTMLCalendar().monthdayscalendar(self.current_year, self.current_month)
-    
-    def next_month(self):
-        self.current_month += 1
-        if self.current_month > 12:
-            self.current_month = 1
-            self.current_year += 1
-        self.build()
-        self.calendar_container.update()
-
-    def prev_month(self):
-        self.current_month -= 1
-        if self.current_month < 1:
-            self.current_month = 12
-            self.current_year -= 1
-        self.build()
-        self.calendar_container.update()
-
-    def select_day(self, event):
-        self.output.value = event.control.data
-        self.output.update()
-
-    def build(self):
-        curr_calendar = self.get_calendar()
-        str_date = f"{self.current_day} de {self.current_month} de {self.current_year}"
-        date_display = ft.Text(str_date, text_align='center', size=20, color=self.text_color)
-        
-        next_button = ft.Button(
-            ft.Text('>', size=20, color=self.text_color),
-            on_click=self.next_month()
-        )
-
-        prev_button = ft.Button(
-            ft.Text('<', size=20, color=self.text_color),
-            on_click=self.prev_month()
-        )
-
-        # Div between the header and the calendar
-        div = ft.Divider(height=1,thickness=2.0 , color=self.border_color)
-
-        column = ft.Column(
-            [ft.Row([prev_button, date_display, next_button],
-            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            height=40,
-            expand=False),
-            div],
-            spacing=2,
-            width=350,
-            height=330,
-            alignment=ft.MainAxisAlignment.START,
-            expand=False
-        )
-
-        for week in curr_calendar:
-            row = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
-
+        for week in cal:
             for day in week:
-                if day > 0:
-                    is_current_day_font = ft.FontWeight.W_300
-                    is_current_day_bg = ft.colors.TRANSPARENT
-                    display_day = str(day)
+                day_text = (str)(day) if day != 0 else ""
+                bg_color = self.get_day_bg_color(day)
 
-                    if len(display_day) == 1:
-                        display_day = f"0{display_day}"
-                    
-                    if day == self.current_day:
-                        is_current_day_font = ft.FontWeight.BOLD
-                        is_current_day_bg = self.curr_day_color
-                    
-                    day_button = ft.Container(
-                        content=ft.Text(display_day, weight=is_current_day_font, color=self.text_color),
-                        on_click=self.select_day,
-                        data=(day, self.current_month, self.current_year),
-                        width=40,
-                        height=40,
-                        ink=True,
-                        alignment=ft.alignment.CENTER,
-                        border_radius=ft.border_radius.all(5),
-                        bgcolor=is_current_day_bg
+                self.calendar_grid.controls.append(
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Text(day_text, text_align="center", color=COLOR_TEXT, weight="bold"),
+                                ft.Container(height=10)
+                            ],
+                            alignment=ft.alignment.center,
+                            spacing=0
+                        ),
+                        alignment=ft.alignment.top_center,
+                        padding=5,
+                        bgcolor=bg_color,
+                        border=ft.border.all(1, COLOR_BORDER),
+                        border_radius=5
                     )
-                else:
-                    day_button = ft.Container(
-                        width=40, height=40, 
-                        border_radius=ft.border_radius.all(5)
-                    )
+                )
+        
+        self.header_text.update()
+        self.calendar_grid.update()
+        #self.page.update()
 
-                row.controls.append(day_button)
-            column.controls.append(row)
-        self.calendar_container.content = column
+    def get_day_bg_color(self, day):
+        today = datetime.now().day
+        this_month = datetime.now().month
+        this_year = datetime.now().year
 
-        return self.calendar_container
+        if (
+            day != 0 and 
+            self.current_date.year == this_year and 
+            self.current_date.month == this_month and 
+            day == today
+        ):
+            return COLOR_CURR_DAY  # Color diferente para el día actual
+        return COLOR_BG if day != 0 else COLOR_BG_SEC
 
+    def prev_month(self, e):
+        new_month = self.current_date.month - 1
+        new_year = self.current_date.year
+        if new_month < 1:
+            new_month = 12
+            new_year -= 1
+        self.current_date = self.current_date.replace(year=new_year, month=new_month)
+        self.update_calendar()
+
+    def next_month(self, e):
+        new_month = self.current_date.month + 1
+        new_year = self.current_date.year
+        if new_month > 12:
+            new_month = 1
+            new_year += 1
+        self.current_date = self.current_date.replace(year=new_year, month=new_month)
+        self.update_calendar()
+
+
+
+def main(page: ft.Page):
+    Calendario(page)
+
+ft.app(target=main)
+
+    
