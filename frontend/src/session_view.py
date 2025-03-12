@@ -67,15 +67,16 @@ def OptLogin(page):
 
 
 def Register(page):
-        name_field = ft.TextField(label="Nombre y apellidos", width=280)
+        name_field = ft.TextField(label="Nombre completo", width=280)
         dni_field = ft.TextField(label="DNI", width=280)
         birth_field = ft.TextField(label="Fecha nacimiento", width=280)
         phone_field = ft.TextField(label="Número teléfono", width=280)
         password_field = ft.TextField(label="Contraseña", password=True, width=280)
+        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280)
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
-            on_click=lambda e: sf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
+            on_click=lambda e: sf.register_user(page, dni_field, name_field, password_field, birth_field)
         )
 
         return ft.Column(
@@ -85,6 +86,7 @@ def Register(page):
                 birth_field,
                 phone_field,
                 password_field,
+                confirm_password_field,
                 register_button,
             ],
             alignment=ft.MainAxisAlignment.CENTER,

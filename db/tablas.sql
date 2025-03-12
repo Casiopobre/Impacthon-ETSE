@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
     `dni` VARCHAR(9) NOT NULL,
     `tipo` ENUM('paciente', 'medico') NOT NULL DEFAULT 'paciente',
     `email` VARCHAR(255),
-    `edad` INT UNSIGNED,
+    `fecha_nac` DATE NOT NULL,
     `nombre_completo` TEXT NOT NULL,
     `passwd` LONGTEXT NOT NULL,
     `num_tlf` INT,
