@@ -309,11 +309,13 @@ function getRecetas(request, response) {
             if (results.length > 0) {
               let recetas;
               for (const recetaNum in results) {
+                console.log(recetaNum)
                 conexion.query(
                   "SELECT nombre FROM Medicamento WHERE id = ? ",
                   [recetaNum.id],
                   async function (error, resultsMed, fields) {
                     if (error) {
+                      console.log("error")
                     } else {
                       recetas[recetaNum] = {
                         nombre: resultsMed[0],
