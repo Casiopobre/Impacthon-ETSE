@@ -69,6 +69,7 @@ app.post("/insertarSintomas", insertarSintomas);
 
 //Funciones post
 function autorizacionPWD(request, response) {
+  console.log("PersonaLogeada")
   dni = request.body.dni;
   passwd = request.body.passwd;
   if (dni && passwd) {
@@ -386,6 +387,7 @@ function insertarRecetas(request, response) {
     }else{
       response.json({
         correcto: 0,
+        mensaje:"No va"
       });
     }
   }
