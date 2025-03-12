@@ -32,12 +32,11 @@ class Calendar():
         self.output=ft.Text() # Selected date
 
     def get_current_date(self):
-        today = datetime.date.today()
+        today = datetime.datetime.now()
         self.current_day = today.day
         self.current_month = today.month
         self.current_year = today.year
 
-            
     def set_theme(self, border_color, text_color, curr_day_color):
         self.border_color = border_color
         self.text_color = text_color

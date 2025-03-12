@@ -2,6 +2,7 @@ import flet as ft
 import cipher as cp
 import datetime
 import requests
+from calendario_nova import FletCalendar
 
 SERVER_IP = "143.47.54.76"
 
@@ -11,24 +12,15 @@ COLOR_BORDER = '#034C8C'
 
 
 def main(page: ft.Page):
-    page.window_width = 640
-    page.window_height = 480
-    page.window_resizable = False
-    page.padding = 48
-    page.margin = 48
+    page.theme = ft.theme.Theme(color_scheme_seed=ft.colors.PINK)
+    page.dark_theme = ft.theme.Theme(color_scheme_seed=ft.colors.PINK)
 
-    def button_clicked(e):    
-        texto.value=(requests.get("http://"+ SERVER_IP +":8080/calendario").json())
-        page.update()
+    # Instancia del calendario
+    mycal = FletCalendar(page)
 
-    botonTest=ft.TextButton(text="Text button", on_click=button_clicked)
-    texto=ft.Text("Size 70, w900, selectable", size=70, weight=ft.FontWeight.W_900, selectable=True)
-
-
-    page.add(
-        texto,
-        botonTest
-    )
+    # Agregar el calendario a la página
+    page.add(mycal, mycal.output)
+    page.update()
 
 
 ft.app(
