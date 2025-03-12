@@ -3,11 +3,19 @@ import flet as ft
 from datetime import datetime
 import calendar
 
+# Configuracion do idioma
+locale.setlocale(locale.LC_ALL, '')
+# locale.setlocale(locale.LC_TIME, 'es_ES')  # Para Windows
+
+
 # Colores
 COLOR_BG = '#F2F2F2'
 COLOR_BORDER = '#034C8C'
-COLOR_FILL = '#5FAAD9'
+COLOR_CURR_DAY = '#5FAAD9'
+COLOR_BG_DAY = '#F2F2F2'
 COLOR_BG_SEC = '#456173'
+COLOR_TEXT = '#000000'
+
 
 class Calendario:
 
@@ -23,12 +31,13 @@ class Calendario:
 
         self.header_text = ft.Text(size=20, weight="bold", text_align="center")
         self.calendar_grid = ft.GridView(
-            expand=1,
+            expand=False,
             runs_count=7, # Columnas
             max_extent=50,
             child_aspect_ratio=1, # Relacion de aspecto
             spacing=5,
             run_spacing=5,
+            width=7 * 50 + 6 * 5 
         )
 
         self._build_ui()
@@ -46,9 +55,12 @@ class Calendario:
         
         calendar_container = ft.Container(
             content=self.calendar_grid,
+            expand=False,
             padding=5,
             border=ft.border.all(1, COLOR_BORDER),
             border_radius=5,
+            bgcolor=COLOR_BG,
+            width=7 * 50 + 6 * 5  
         )
         
         self.page.add(navigation_row, calendar_container)
@@ -73,7 +85,7 @@ class Calendario:
         for week in cal:
             for day in week:
                 day_text = (str)(day) if day != 0 else ""
-                bg_color = COLOR_BG if day != 0 else ft.colors.GREY
+                bg_color = COLOR_BG if day != 0 else COLOR_BG_SEC
                 self.calendar_grid.controls.append(
                     ft.Container(
                         content=ft.Text(day_text, text_align="center"),
