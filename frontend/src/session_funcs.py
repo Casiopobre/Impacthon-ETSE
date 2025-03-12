@@ -18,6 +18,45 @@ def login(page: ft.Page, dni, passwd):
         page.update()
         return
 
+    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+        dummy_data = {
+        "users": [
+            {
+                "name": "Juan",
+                "dni": "12345678A",
+                "birth_date": "1990-01-01",
+                "phone": "+34123456789",
+                "password": "password123",
+                "otp": "123456",
+                "tipo": "paciente"
+            },
+            {
+                "name": "Maripuri",
+                "dni": "87654321B",
+                "birth_date": "1985-05-15",
+                "phone": "+34987654321",
+                "password": "password456",
+                "otp": "654321",
+                "tipo": "medico"
+            }
+        ]
+    }
+
+    user = next((user for user in dummy_data["users"] if user["dni"] == dni.value and user["password"] == passwd.value), None)
+    if user:
+        page.snack_bar = ft.SnackBar(ft.Text("Inicio de sesión exitoso"))
+        page.controls.append(page.snack_bar)
+        page.snack_bar.open = True
+        page.update()
+        return
+
+    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
+
+
     response = requests.post("http://"+ shared.SERVER_IP +":8080/authPWD", data={"dni": dni.value, "passwd": passwd.value}).json()
     
     if response.get("correcto") == 0:
@@ -40,34 +79,26 @@ def login(page: ft.Page, dni, passwd):
         page.snack_bar.open = True
         page.update()
 
-def register_user(page: ft.Page, dni_field, edad_field, password_field, password_confirm_field, fecha_nac_field):
+def register_user(page: ft.Page, dni_field, name_field, password_field, fecha_nac_field):
     """Procesa el registro de un nuevo paciente."""
-    if not dni_field.value or not edad_field.value or not password_field.value or not password_confirm_field.value or not fecha_nac_field.value:
+    if not dni_field.value or not name_field.value or not password_field.value or not fecha_nac_field.value:
         page.snack_bar = ft.SnackBar(ft.Text("Todos los campos son obligatorios"))
         page.controls.append(page.snack_bar)
         page.snack_bar.open = True
         page.update()
         return
     
-    response = requests.post("http://"+ shared.SERVER_IP +":8080/authPWD", data={
+    # AJUSTAR !!!!
+    response = requests.post("http://"+ shared.SERVER_IP +":8080/createAct", data={
         "dni": dni_field.value,
         "passwd": password_field.value,
-        "edad": edad_field.value,
-        "nombre": "Nombre",  # Replace with actual value if available
-        "apellido1": "Apellido1",  # Replace with actual value if available
-        "apellido2": "Apellido2",  # Replace with actual value if available
+        "nombre": name_field.value,  # Replace with actual value if available
         "num_tlf": "123456789"  # Replace with actual value if available
     }).json()
 
     dni = dni_field.value
-    try:
-        edad = int(edad_field.value)
-    except ValueError:
-        page.snack_bar = ft.SnackBar(ft.Text("La edad debe ser un número"))
-        page.controls.append(page.snack_bar)
-        page.snack_bar.open = True
-        page.update()
-        return
+
+    
 
     if response.get("correcto") == 0:
         # error

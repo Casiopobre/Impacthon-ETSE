@@ -1,27 +1,40 @@
 import flet as ft
 import session_funcs as sf
+import shared
 
-def NormalLoginTab(page):
+def NormalLogin(page):
         dni_field = ft.TextField(label="DNI", width=280)
         password_field = ft.TextField(label="Contraseña", password=True, width=280)
+        
         otp_button = ft.ElevatedButton(
             text="Inicio de sesión con código de un solo uso",
-            on_click=lambda e: page.go("/session/otplogin")
+            on_click=lambda _: page.go("/session/otplogin")
         )
 
         login_button = ft.ElevatedButton(
             text="Iniciar sesión",
-            on_click=lambda e: sf.login(page, dni_field, password_field)
+            on_click=lambda _: sf.login(page, dni_field, password_field)
         )
+<<<<<<< HEAD
         register_button = ft.ElevatedButton(
              text="Registrarse",
              on_click=lambda e: page.go("/session/register")
         )
         print("\n\n\n\n\n Hola \n\n\n\n\n")
+=======
+
+        register_button = ft.ElevatedButton(
+            text="Registrarse",
+            on_click=lambda _: page.go("/session/register")
+        )
+
+        print("\n\n estás en login \n\n")
+>>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
 
         return ft.Column(
             [
                 ft.Row([
+<<<<<<< HEAD
                         register_button
                     ],
                     alignment=ft.MainAxisAlignment.END),
@@ -29,6 +42,20 @@ def NormalLoginTab(page):
                 password_field,
                 login_button,
                 otp_button
+=======
+                    login_button,
+                    register_button
+                ]),
+                ft.Row([
+                    dni_field,
+                    password_field,
+
+                ]),
+                ft.Row([                    
+                    login_button,
+                    otp_button
+                ]),
+>>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -36,7 +63,7 @@ def NormalLoginTab(page):
         )
 
 
-def OtpLoginTab(page):
+def OptLogin(page):
         dni_field = ft.TextField(label="DNI", width=280)
         otp_field = ft.TextField(label="Código de un solo uso", width=280)
 
@@ -57,16 +84,17 @@ def OtpLoginTab(page):
         )
 
 
-def RegisterTab(page):
-        name_field = ft.TextField(label="Nombre y apellidos", width=280)
+def Register(page):
+        name_field = ft.TextField(label="Nombre completo", width=280)
         dni_field = ft.TextField(label="DNI", width=280)
         birth_field = ft.TextField(label="Fecha nacimiento", width=280)
         phone_field = ft.TextField(label="Número teléfono", width=280)
         password_field = ft.TextField(label="Contraseña", password=True, width=280)
+        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280)
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
-            on_click=lambda e: sf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
+            on_click=lambda e: sf.register_user(page, dni_field, name_field, password_field, birth_field)
         )
 
         return ft.Column(
@@ -76,6 +104,7 @@ def RegisterTab(page):
                 birth_field,
                 phone_field,
                 password_field,
+                confirm_password_field,
                 register_button,
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -98,72 +127,40 @@ def build_view(page: ft.Page):
     #   - Estamos cooked
     # --#-- !!! --#--
     selected_index = 0
-    if page.route == "/session/otplogin":
-        selected_index = 1
-    elif page.route == "/session/register":
-        selected_index = 2
-    # Show a snackbar when the route changes
-    page.snack_bar = ft.SnackBar(
-        content=ft.Text(f"Switched to tab: {selected_index + 1}"),
-        action="Dismiss"
-    )
-    page.controls.append(page.snack_bar)
-    page.snack_bar.open = True
-
-    tabs = ft.Tabs(
-        selected_index=selected_index,
-        on_change=lambda e: session_tab_change(e, page),
-        tabs=[
-            ft.Tab(
-                text="Iniciar sesión",
-                # content=session_comps.NormalLoginTab(ft)
-                content=ft.Container(
-                    content=NormalLoginTab(page)
-                ),
-            ),
-            ft.Tab(
-                text="Inicio de sesión con código de un solo uso",
-                content=ft.Container(
-                    content=OtpLoginTab(page)
-                ),            ),
-            ft.Tab(
-                text="Registrarme",
-                content=ft.Container(
-                    content=RegisterTab(page)
-                ),            ),
-        ]
-    )
-
+        
+    components = []
+    route_returned="/"
+    if page.route == "/session/login":
     # Wrap tabs in a nice container for styling
+        components = NormalLogin(page)
+        route_returned="/session/login"
+    elif page.route == "/session/otplogin":
+        components = OptLogin(page)
+        route_returned="/session/otplogin"
+    elif page.route == "/session/register":
+        components = Register(page)
+        route_returned="/session/register"
+        
     content_container = ft.Container(
-        content=tabs,
+        content=components,
         alignment=ft.alignment.center,
-        expand=True,
         bgcolor=ft.colors.WHITE,
         padding=20,
         border_radius=10,
         shadow=ft.BoxShadow(blur_radius=10, spread_radius=2, color=ft.colors.BLACK12),
     )
+    
+
 
     # Create the top-level view
     return ft.View(
-        route=page.route,
+        route=route_returned,
         controls=[
             # Optionally an AppBar:
             ft.AppBar(
-                title=ft.Text("Gestión de Sesión", size=32),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
+                bgcolor=shared.SERGAS_1_HEX,
             ),
             content_container
         ]
     )
-
-def session_tab_change(e: ft.ControlEvent, page: ft.Page):
-    """When user manually switches tabs from the UI, you can optionally sync the route here."""
-    if e.control.selected_index == 0:
-        page.go("/session/login")
-    elif e.control.selected_index == 1:
-        page.go("/session/otplogin")
-    elif e.control.selected_index == 2:
-        page.go("/session/register")
 
