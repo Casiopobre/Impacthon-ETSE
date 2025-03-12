@@ -351,7 +351,7 @@ function getRecetas(request, response) {
                   }
                 );
               }
-              console.log(jsonRespuesta)
+              console.log(recetas)
               response.json(jsonRespuesta);
             }else{
             response.json({
