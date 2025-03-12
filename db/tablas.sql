@@ -14,14 +14,8 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
     `edad` INT UNSIGNED,
     `nombre_completo` TEXT NOT NULL,
     `passwd` LONGTEXT NOT NULL,
-<<<<<<< HEAD
     `num_tlf` INT,
     `profesional_responsable` BIGINT UNSIGNED,  -- Profesional responsable (FK para pacientes)
-=======
-    `num_tlf` INT NOT NULL,
-    `profesional_responsable` BIGINT UNSIGNED,  -- Profesional responsable (FK)
-    `tipo_usuario` ENUM('paciente', 'medico') NOT NULL,
->>>>>>> f53a58063cd937e944eb3fd16f4414431e04cdd7
     UNIQUE KEY (`dni`)
 );
 
@@ -130,15 +124,12 @@ CREATE TABLE IF NOT EXISTS `Sintomatologia` (
 -- ============================================================
 -- 9. Relaciones adicionales
 -- ============================================================
-<<<<<<< HEAD
 
 -- En Paciente, el campo profesional_responsable es obligatorio para la existencia del registro
 ALTER TABLE `Usuario`
     ADD CONSTRAINT `paciente_profesional_responsable_foreign`
     FOREIGN KEY (`profesional_responsable`) REFERENCES `Usuario`(`id`);
 
-=======
->>>>>>> f53a58063cd937e944eb3fd16f4414431e04cdd7
 -- (Opcional) Si se desea agregar índices para optimizar consultas:
 ALTER TABLE `Usuario` ADD INDEX `paciente_profesional_responsable_index` (`profesional_responsable`);
 ALTER TABLE `Receta` ADD INDEX `receta_id_paciente_index` (`id_paciente`);
