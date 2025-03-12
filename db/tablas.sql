@@ -6,7 +6,7 @@ USE `pastillero`;
 -- ============================================================
 -- 1. Tabla de Pacientes
 -- ============================================================
-CREATE TABLE IF NOT EXISTS `Paciente` (
+CREATE TABLE IF NOT EXISTS `Usuario` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `dni` VARCHAR(9) NOT NULL,
     `edad` INT UNSIGNED NOT NULL,
@@ -16,23 +16,7 @@ CREATE TABLE IF NOT EXISTS `Paciente` (
     `passwd` LONGTEXT NOT NULL,
     `num_tlf` INT NOT NULL,
     `profesional_responsable` BIGINT UNSIGNED,  -- Profesional responsable (FK)
-    UNIQUE KEY (`dni`)
-);
-
--- ============================================================
--- 2. Tabla de Profesionales Sanitarios
--- ============================================================
-CREATE TABLE IF NOT EXISTS `ProfesionalSanitario` (
-    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `dni` VARCHAR(9) NOT NULL,
-    `tipo_profesional` ENUM('cabecera', 'generico') NOT NULL,
-    `nombre` TEXT NOT NULL,
-    `apellido1` TEXT NOT NULL,
-    `apellido2` TEXT NULL,
-    `passwd` LONGTEXT NOT NULL,
-    -- Campo opcional para almacenar de forma denormalizada los pacientes atendidos 
-    -- (aunque lo ideal es la tabla de relación que se crea más adelante)
-    `pacientes` TEXT,
+    `tipo_usuario` ENUM('paciente', 'medico') NOT NULL,
     UNIQUE KEY (`dni`)
 );
 
@@ -156,12 +140,6 @@ CREATE TABLE IF NOT EXISTS `Sintomatologia` (
 -- ============================================================
 -- 9. Relaciones adicionales
 -- ============================================================
-
--- En Paciente, el campo profesional_responsable es obligatorio para la existencia del registro
-ALTER TABLE `Paciente`
-    ADD CONSTRAINT `paciente_profesional_responsable_foreign`
-    FOREIGN KEY (`profesional_responsable`) REFERENCES `ProfesionalSanitario`(`id`);
-
 -- (Opcional) Si se desea agregar índices para optimizar consultas:
 ALTER TABLE `Paciente` ADD INDEX `paciente_profesional_responsable_index` (`profesional_responsable`);
 ALTER TABLE `Receta` ADD INDEX `receta_id_paciente_index` (`id_paciente`);
