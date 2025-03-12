@@ -33,24 +33,22 @@ conexion = mysql.createConnection({
 });
 
 function checkTokenJWT(token, id) {
+    returnValue=0
   if (token) {
+   
     jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
-        console.log(token_data)
-        if (err) {
-          console.log("token invalido")
-          return 0;
+        if (err || token_data != id) {
+          returnValue=1;
         } else {
-          if((token_data.id == id)){
-          console.log("token valido")
-          return 1;
-          }
+        returnValue=0;
         }
       }
     );
   }
+  return returnValue
 }
 
 //-------------  RUTAS  -------------
