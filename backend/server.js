@@ -347,6 +347,7 @@ function getRecetas(request, response) {
                   }
                 );
               }
+              console.log(jsonRespuesta)
               response.json(jsonRespuesta);
             }else{
             response.json({
