@@ -319,6 +319,7 @@ function getRecetas(request, response) {
             });
           } else {
             if (results.length > 0) {
+              let jsonRespuesta;
               let recetas;
               for (const recetaNum in results) {
                 recetas = []
