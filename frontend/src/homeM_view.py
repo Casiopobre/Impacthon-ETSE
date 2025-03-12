@@ -2,44 +2,102 @@ import flet as ft
 import session_funcs as sf
 import shared
 
-def build_homeP_view(page: ft.Page):
+
+def GestionarPacienteTab(page):
+    codigo_field = ft.TextField(label="Codigo del Paciente", width=280)
+    gestionar_button = ft.ElevatedButton(text="Gestionar Paciente", width=200)
+    qr_button = ft.IconButton(icon=ft.icons.ACCESS_ALARM, width=70)
+    return ft.Column(
+        [
+            codigo_field,
+            ft.Row(
+                [
+                    gestionar_button,
+                    qr_button
+                ],
+                alignment= ft.MainAxisAlignment.CENTER
+            )
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=20
+    )
+
+def AnadirPacienteTab(page):
+    name_field = ft.TextField(label="Nombre", width=280)
+    apellido1_field = ft.TextField(label="Apellido1", width=200)
+    apellido2_field = ft.TextField(label="Apellido2", width=200)
+    dni_field = ft.TextField(label="DNI", width=280)
+    birth_field = ft.TextField(label="Fecha nacimiento", width=280)
+    phone_field = ft.TextField(label="Número teléfono", width=280)
+    password_field = ft.TextField(label="Contraseña", password=True, width=280)
+    password_confirmation_field = ft.TextField(label="Confirmar Contraseña", password=True, width=280)
+
+    register_button = ft.ElevatedButton(
+        text="Registrarse",
+        on_click=lambda e: sf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
+    )
+
+    return ft.Column(
+        [
+            name_field,
+            ft.Row(
+                [
+                    apellido1_field,
+                    apellido2_field
+                ],
+                alignment=ft.MainAxisAlignment.CENTER
+            ),
+            dni_field,
+            birth_field,
+            phone_field,
+            password_field,
+            password_confirmation_field,
+            register_button,
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=20
+    )
+
+def build_homeM_view(page: ft.Page):
     """
     Construye la vista principal del paciente con la lista de medicamentos y espacio para el calendario.
     """
     page.title = "Mi Medicación"
     
-    # Function to handle feeling button click
-    def open_feeling_dialog(e):
-        feeling_dialog = ft.AlertDialog(
-            title=ft.Text("¿Cómo te sientes?"),
-            content=ft.Column([
-                ft.TextField(label="blablabla")
-            ], tight=True, spacing=20),
-            actions=[
-            ft.ElevatedButton(
-                "Cancelar",
-                on_click=lambda e: setattr(feeling_dialog, "open", False)
-            ),
-            ft.ElevatedButton(
-                "Enviar",
-                on_click=lambda e: setattr(feeling_dialog, "open", False)
-            )
-            ]
-        )
-        page.dialog = feeling_dialog
-        feeling_dialog.open = True
-        page.update()
-        return 
     # Top navigation bar
     profile_name = "Juan Pérez"  # This would come from actual user data
-    
+    Vis = ft.Container()
+    if (page.route == "/homem"):
+        Vis.content = ft.Text(value="Aqui no hay nada todavía manin")
+    elif (page.route == "/homem/ges"):
+        Vis.content = GestionarPacienteTab(page)
+    elif (page.route == "/homem/an"):
+        Vis.content=AnadirPacienteTab(page)
+
+
+    def GestionClick(e):
+        page.go("/homem/ges", skip_route_change_event= True)
+    def AnadirClick(e):
+        page.go("/homem/an", skip_route_change_event= True)
+
+
+    boton_ges = ft.TextButton(text="Gestionar Paciente",on_click= GestionClick)
+    boton_an = ft.TextButton(text="Añadir Pacientes", on_click= AnadirClick)
     nav_bar = ft.Row(
         controls=[
-            ft.IconButton(
+            boton_ges,
+            boton_an,
+            ft.PopupMenuButton(
                 icon=ft.icons.DOUBLE_ARROW,
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
+                items = [
+                    ft.PopupMenuItem(text = "Cambiar perfil"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
             ),
             # ft.Spacer(),
             ft.Text(profile_name, color=ft.colors.WHITE, size=16),
@@ -51,158 +109,22 @@ def build_homeP_view(page: ft.Page):
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
 
-    # Feeling button
-    feeling_button = ft.ElevatedButton(
-        "¿Cómo te sientes?",
-        icon=ft.icons.MOOD,
-        on_click=open_feeling_dialog,
-        style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            padding=ft.padding.all(15),
-        )
-    )
-
-    # Medication list - this would typically be populated from a database
-    def get_medication_data():
-        # This would be replaced with an actual API call like sf.get_recetas(user_dni)
-        # For now, returning sample data
-        return [
-            {"name": "Paracetamol", "dose": 500, "interval": 8, "image": "paracetamol.png"},
-            {"name": "Ibuprofeno", "dose": 400, "interval": 6, "image": "ibuprofeno.png"},
-            {"name": "Omeprazol", "dose": 20, "interval": 24, "image": "omeprazol.png"},
-            {"name": "Amoxicilina", "dose": 750, "interval": 12, "image": "amoxicilina.png"},
-        ]
-
-    # Function to create a medication card
-    def create_medication_card(medication):
-        return ft.Card(
-            content=ft.Container(
-                content=ft.Row(
-                    [
-                        # Left side - medication image
-                        ft.Container(
-                            content=ft.Icon(
-                                ft.icons.MEDICATION,
-                                size=40,
-                                color=ft.colors.BLUE_400,
-                            ),
-                            width=60,
-                            height=60,
-                            alignment=ft.alignment.center,
-                            bgcolor=ft.colors.BLUE_50,
-                            border_radius=ft.border_radius.all(10),
-                        ),
-                        
-                        # Right side - medication details
-                        ft.Column(
-                            [
-                                ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16),
-                                ft.Text(f"Dosis: {medication['dose']} mg", size=14),
-                                ft.Text(f"Intervalo: Cada {medication['interval']} horas", size=14),
-                            ],
-                            spacing=5,
-                            alignment=ft.MainAxisAlignment.CENTER,
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.START,
-                ),
-                padding=15,
-            ),
-            margin=ft.margin.only(bottom=10),
-            elevation=2,
-        )
-
-    # Create medication list
-    medication_list = ft.ListView(
-        spacing=10,
-        padding=20,
-        expand=True,
-    )
-    
-    # Populate medication list
-    medications = get_medication_data()
-    for medication in medications:
-        medication_list.controls.append(create_medication_card(medication))
-
-    # Container for the calendar (to be implemented later)
-    calendar_container = ft.Container(
-        content=ft.Column(
-            [
-                ft.Text("Calendario", size=20, weight=ft.FontWeight.BOLD),
-                ft.Container(
-                    content=ft.Text("El calendario se mostrará aquí"),
-                    alignment=ft.alignment.center,
-                    height=300,
-                    border=ft.border.all(1, ft.colors.GREY_400),
-                    border_radius=10,
-                    padding=20,
-                ),
-            ]
-        ),
-        padding=20,
-        expand=True,
-    )
-
-    # Main content layout - responsive
-    def get_content_layout():
-        # Check if we're on mobile
-        if page.width < 600:
-            # Mobile layout: Calendar under medication list
-            return ft.Column(
-                [
-                    ft.Container(
-                        content=ft.Column(
-                            [
-                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
-                                medication_list,
-                            ],
-                        ),
-                        expand=True,
-                    ),
-                    calendar_container,
-                ],
-                expand=True,
-            )
-        else:
-            # Desktop/web layout: Calendar to the right of medication list
-            return ft.Row(
-                [
-                    ft.Container(
-                        content=ft.Column(
-                            [
-                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
-                                medication_list,
-                            ],
-                        ),
-                        expand=True,
-                    ),
-                    calendar_container,
-                ],
-                expand=True,
-            )
 
     # Update layout when window size changes
     page.on_resize = lambda _: page.update()
-
     # Main view
     return ft.View(
-        route="/home",
+        route= page.route,
         controls=[
             # AppBar with navigation
             ft.AppBar(
-                title=ft.Text("Mi Medicación"),
+                title=ft.Text("Home Page"),
                 bgcolor=ft.colors.DEEP_ORANGE_800,
                 actions=[nav_bar],
             ),
-            # Feeling button in a container
-            ft.Container(
-                content=feeling_button,
-                alignment=ft.alignment.center,
-                padding=ft.padding.only(top=20, bottom=10),
-            ),
-            # Main content (responsive)
-            get_content_layout(),
+            Vis
         ],
     )
+    
 
 # Update main.py to include this route

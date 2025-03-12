@@ -126,10 +126,16 @@ def build_homeP_view(page: ft.Page):
         medication_list.controls.append(create_medication_card(medication))
 
     # Container for the calendar 
-    calendario = Calendario()
+    calendario = Calendario(page)
 
     calendar_container = ft.Container(
-        content=calendario.get_calendar_view(),
+        content=(
+            ft.Column(
+                [
+                    calendario.navigation_row, calendario.get_calendar_view()
+            ],
+            alignment=ft.MainAxisAlignment.CENTER)
+        ),
         padding=20,
         expand=False
     )
