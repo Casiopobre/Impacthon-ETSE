@@ -34,9 +34,9 @@ conexion = mysql.createPool({
 //-------------  RUTAS  -------------
 
 //Rutas get
-app.get("/getRecetas", getRecetas);
 
 //Rutas post
+app.post("/getRecetas", getRecetas);
 app.post("/authPWD", autorizacionPWD);
 app.post("/authToken", autorizacionToken);
 app.post("/createActMedico", crearCuentaMedico);
@@ -52,7 +52,7 @@ function autorizacionPWD(request, response) {
   passwd = request.body.passwd;
   if (dni && passwd) {
     conexion.query(
-      "SELECT * FROM Paciente WHERE dni = ? ",
+      "SELECT * FROM Usuario WHERE dni = ? ",
       [dni],
       async function (error, results, fields) {
         if (error) {
@@ -70,6 +70,7 @@ function autorizacionPWD(request, response) {
                 correcto: 1,
                 tokenLogin: tokenLogin,
                 id: results[0].id,
+                tipoUsuario: results[0].tipoUsuario,
               });
             }
           }
@@ -103,7 +104,7 @@ function autorizacionToken(request, response) {
           if (results.length > 0) {
             idPaciente = results[0].paciente;
             conexion.query(
-              "SELECT * FROM Paciente WHERE id = ? ",
+              "SELECT * FROM Usuario WHERE id = ? ",
               [idPaciente],
               async function (error, results, fields) {
                 if (error) {
@@ -120,6 +121,7 @@ function autorizacionToken(request, response) {
                       correcto: 1,
                       tokenLogin: tokenLogin,
                       id: results[0].id,
+                      tipoUsuario: results[0].tipoUsuario
                     });
                   }
                 }
@@ -147,8 +149,17 @@ async function crearCuenta(request, response) {
 
   if (dni && passwd && edad && nombre && apellido1 && apellido2 && num_tlf) {
     conexion.query(
-      "INSERT into Paciente (dni,edad,nombre,apellido1,apellido2,passwd,num_tlf) values(?,?,?,?,?,?,?)",
-      [dni, edad, nombre, apellido1, apellido2, encryptedPasswd, num_tlf],
+      "INSERT into Usuario (dni,edad,nombre,apellido1,apellido2,passwd,num_tlf,tipo_usuario) values(?,?,?,?,?,?,?,?)",
+      [
+        dni,
+        edad,
+        nombre,
+        apellido1,
+        apellido2,
+        encryptedPasswd,
+        num_tlf,
+        "paciente",
+      ],
       async function (error) {
         if (error) {
           response.json({
@@ -173,60 +184,119 @@ async function crearCuenta(request, response) {
 }
 
 async function crearCuentaMedico(request, response) {
-  dni = request.body.dni;
-  passwd = request.body.passwd;
-  edad = request.body.edad;
-  nombre = request.body.nombre;
-  apellido1 = request.body.apellido1;
-  apellido2 = request.body.apellido2;
-  num_tlf = request.body.num_tlf;
-  let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
-
-  if (dni && passwd && edad && nombre && apellido1 && apellido2 && num_tlf) {
-    conexion.query(
-      "INSERT into Paciente (dni,edad,nombre,apellido1,apellido2,passwd,num_tlf) values(?,?,?,?,?,?,?)",
-      [dni, edad, nombre, apellido1, apellido2, encryptedPasswd, num_tlf],
-      async function (error) {
-        if (error) {
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (tokenLogin) {
+    jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, token_data) {
+        if (err || token_data != id) {
           response.json({
             correcto: 0,
-            mensaje: error.message,
           });
         } else {
           conexion.query(
-            "SELECT * FROM Paciente WHERE dni = ? ",
-            [dni],
+            "SELECT * FROM Usuario WHERE id = ? ",
+            [id],
             async function (error, results, fields) {
-              // Si ocurre algún error lanzamos el error
               if (error) {
                 console.log(error);
                 response.json({
                   correcto: 0,
-                  mensaje: "Error al crear el token",
+                  mensaje: error.message,
                 });
               } else {
-                if (results.length > 0) {
-                  id = results[0].id;
-                  token = maketoken(10);
-                  conexion.query(
-                    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
-                    [token, id, "login"],
-                    async function (error) {
-                      if (error) {
-                        console.log(error);
-                        response.json({
-                          correcto: 0,
-                          mensaje: "Error al crear el token",
-                        });
-                      } else {
-                        response.json({
-                          correcto: 1,
-                          mensaje: "Cuenta creada",
-                          token: token,
-                        });
+                if (results > 0) {
+                  dni = request.body.dni;
+                  passwd = request.body.passwd;
+                  edad = request.body.edad;
+                  nombre = request.body.nombre;
+                  apellido1 = request.body.apellido1;
+                  apellido2 = request.body.apellido2;
+                  num_tlf = request.body.num_tlf;
+                  let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
+
+                  if (
+                    dni &&
+                    passwd &&
+                    edad &&
+                    nombre &&
+                    apellido1 &&
+                    apellido2 &&
+                    num_tlf
+                  ) {
+                    conexion.query(
+                      "INSERT into Usuario (dni,edad,nombre,apellido1,apellido2,passwd,num_tlf,tipo_usuario) values(?,?,?,?,?,?,?,?)",
+                      [
+                        dni,
+                        edad,
+                        nombre,
+                        apellido1,
+                        apellido2,
+                        encryptedPasswd,
+                        num_tlf,
+                        "paciente",
+                      ],
+                      async function (error) {
+                        if (error) {
+                          response.json({
+                            correcto: 0,
+                            mensaje: error.message,
+                          });
+                        } else {
+                          conexion.query(
+                            "SELECT * FROM Usuario WHERE dni = ? ",
+                            [dni],
+                            async function (error, results, fields) {
+                              // Si ocurre algún error lanzamos el error
+                              if (error) {
+                                console.log(error);
+                                response.json({
+                                  correcto: 0,
+                                  mensaje: "Error al crear el token",
+                                });
+                              } else {
+                                if (results.length > 0) {
+                                  id = results[0].id;
+                                  token = maketoken(10);
+                                  conexion.query(
+                                    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+                                    [token, id, "login"],
+                                    async function (error) {
+                                      if (error) {
+                                        console.log(error);
+                                        response.json({
+                                          correcto: 0,
+                                          mensaje: "Error al crear el token",
+                                        });
+                                      } else {
+                                        response.json({
+                                          correcto: 1,
+                                          mensaje: "Cuenta creada",
+                                          token: token,
+                                        });
+                                      }
+                                    }
+                                  );
+                                }
+                              }
+                            }
+                          );
+                        }
                       }
-                    }
-                  );
+                    );
+                  } else {
+                    response.json({
+                      correcto: 0,
+                      mensaje: "Faltan campos",
+                    });
+                  }
+                } else {
+                  response.json({
+                    correcto: 0,
+                    mensaje: "No tienes permisos para esa accion",
+                  });
                 }
               }
             }
@@ -234,11 +304,6 @@ async function crearCuentaMedico(request, response) {
         }
       }
     );
-  } else {
-    response.json({
-      correcto: 0,
-      mensaje: "Faltan campos",
-    });
   }
 }
 
@@ -276,19 +341,22 @@ function getRecetas(request, response) {
                         if (error) {
                         } else {
                           recetas[recetaNum] = {
-                            nombre:resultsMed[0],
-                            fechaEmision:results[recetaNum].fecha_emision,
-                            fechaFin:results[recetaNum].fecha_fin,
-                            dosificacion:results[recetaNum].dosificacion,
-                            intervalosDosificacion:results[recetaNum].intervalos_dosificacion
+                            nombre: resultsMed[0],
+                            fechaEmision: results[recetaNum].fecha_emision,
+                            fechaFin: results[recetaNum].fecha_fin,
+                            dosificacion: results[recetaNum].dosificacion,
+                            intervalosDosificacion:
+                              results[recetaNum].intervalos_dosificacion,
                           };
                           jsonRespuesta = {
                             correcto: 1,
                             recetas: recetas,
                           };
                           response.json(jsonRespuesta);
-                        }})                    
-                  }                
+                        }
+                      }
+                    );
+                  }
                 }
                 response.json({
                   correcto: 0,
