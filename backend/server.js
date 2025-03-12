@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const maketoken = require("./functions.js");
 const generateAccessToken = require("./generarTokenAuth.js");
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken")
 require("dotenv").config();
 
 //Variables generales
