@@ -340,6 +340,7 @@ function getRecetas(request, response) {
                         intervalosDosificacion:
                           results[recetaNum].intervalos_dosificacion,
                       };
+                      console.log(recetas[0])
                       jsonRespuesta = {
                         correcto: 1,
                         recetas: recetas,
