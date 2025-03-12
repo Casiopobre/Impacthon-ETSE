@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const maketoken = require("./functions.js");
 const generateAccessToken = require("./generarTokenAuth.js");
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken")
 require("dotenv").config();
 
 //Variables generales
@@ -16,9 +17,9 @@ var port = process.env.PORT || 8080;
 app.use(express.json());
 
 //Conexion base de datos
-conexion = mysql.createPool({
+conexion = mysql.createConnection({
   host: process.env.HOST,
-  user: process.env.USER,
+  user: 'root',
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   port: 3306,
@@ -37,10 +38,13 @@ function checkTokenJWT(token, id) {
       token,
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
-        if (err || token_data != id) {
-          return 1;
-        } else {
+        console.log(token_data)
+        if ((token_data.id != id)) {
+          console.log("token invalido")
           return 0;
+        } else {
+          console.log("token valido")
+          return 1;
         }
       }
     );
@@ -94,13 +98,6 @@ function autorizacionPWD(request, response) {
         }
       }
     );
-
-    jsonRespuesta = {
-      usuario: dni,
-      contraseña: passwd,
-      token: makeid(8),
-    };
-    response.json(jsonRespuesta);
   }
 }
 
@@ -154,7 +151,7 @@ function autorizacionToken(request, response) {
 async function crearCuenta(request, response) {
   dni = request.body.dni;
   passwd = request.body.passwd;
-  edad = request.body.edad;
+  fecha = request.body.fecha;
   nombreCompleto = request.body.nombreCompleto;
   num_tlf = request.body.num_tlf;
   let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
@@ -162,10 +159,10 @@ async function crearCuenta(request, response) {
   // Aqui hay que añadir una comprobacion de que el usuario no exista ya
   // ni en paciente ni en medico, con DNI, supongo que valdrá
 
-  if (dni && passwd && edad && nombreCompleto && num_tlf) {
+  if (dni && passwd && fecha && nombreCompleto && num_tlf) {
     conexion.query(
-      "INSERT into Usuario (dni,edad,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
-      [dni, edad, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
+      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
+      [dni, fecha, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
       async function (error) {
         if (error) {
           response.json({
@@ -175,8 +172,7 @@ async function crearCuenta(request, response) {
         } else {
           response.json({
             correcto: 1,
-            mensaje: "Cuenta creada",
-            token: token,
+            mensaje: "Cuenta creada"
           });
         }
       }
@@ -207,17 +203,17 @@ async function crearCuentaMedico(request, response) {
           if (results > 0) {
             dni = request.body.dni;
             passwd = request.body.passwd;
-            edad = request.body.edad;
+            fecha = request.body.fecha;
             nombreCompleto = request.body.nombreCompleto;
             num_tlf = request.body.num_tlf;
             let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
 
             if (dni && passwd && edad && nombreCompleto && num_tlf) {
               conexion.query(
-                "INSERT into Usuario (dni,edad,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
                 [
                   dni,
-                  edad,
+                  fecha,
                   nombreCompleto,
                   encryptedPasswd,
                   num_tlf,
@@ -359,7 +355,7 @@ function insertarRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
   if (tokenLogin) {
-    if(checkTokenJWT(tokenLogin,id)){
+    if(checkTokenJWT(tokenLogin,id)==1){
       arrayRecetas = request.body.recetas;
       for (const numReceta in arrayRecetas) {
         receta = arrayRecetas[numReceta];

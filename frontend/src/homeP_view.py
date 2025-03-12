@@ -1,6 +1,7 @@
 import flet as ft
 import session_funcs as sf
 import shared
+from calendario import Calendario
 
 def build_homeP_view(page: ft.Page):
     """
@@ -88,12 +89,70 @@ def build_homeP_view(page: ft.Page):
     for medication in get_medication_data():
         medication_list.controls.append(create_medication_card(medication))
 
+    # Container for the calendar 
+    calendario = Calendario(page)
+
+    calendar_container = ft.Container(
+        content=(
+            ft.Column(
+                [
+                    calendario.navigation_row, calendario.get_calendar_view()
+            ],
+            alignment=ft.MainAxisAlignment.CENTER)
+        ),
+        padding=20,
+        expand=False
+    )
+
+    # Main content layout - responsive
+    def get_content_layout():
+        # Check if we're on mobile
+        if page.width < 600:
+            # Mobile layout: Calendar under medication list
+            return ft.Column(
+                [
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
+                                medication_list,
+                            ],
+                        ),
+                        expand=True,
+                    ),
+                    calendar_container,
+                ],
+                expand=True,
+            )
+        else:
+            # Desktop/web layout: Calendar to the right of medication list
+            return ft.Row(
+                [
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
+                                medication_list,
+                            ],
+                        ),
+                        expand=True,
+                    ),
+                    calendar_container,
+                ],
+                expand=True,
+            )
+
+    # Update layout when window size changes
+    page.on_resize = lambda _: page.update()
+
+    # Main view
     return ft.View(
         route="/home",
         controls=[
             ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor=ft.colors.DEEP_ORANGE_800),
             ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
-            medication_list,
+            #medication_list,
+            get_content_layout(),
         ],
     )
 

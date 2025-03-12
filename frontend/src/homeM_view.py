@@ -27,7 +27,9 @@ def GestionarPacienteTab(page):
     )
 
 def AnadirPacienteTab(page):
-    name_field = ft.TextField(label="Nombre completo", width=280)
+    name_field = ft.TextField(label="Nombre", width=280)
+    apellido1_field = ft.TextField(label="Apellido1", width=200)
+    apellido2_field = ft.TextField(label="Apellido2", width=200)
     dni_field = ft.TextField(label="DNI", width=280)
     birth_field = ft.TextField(label="Fecha nacimiento", width=280)
     phone_field = ft.TextField(label="Número teléfono", width=280)
@@ -42,6 +44,13 @@ def AnadirPacienteTab(page):
     return ft.Column(
         [
             name_field,
+            ft.Row(
+                [
+                    apellido1_field,
+                    apellido2_field
+                ],
+                alignment=ft.MainAxisAlignment.CENTER
+            ),
             dni_field,
             birth_field,
             phone_field,
@@ -81,11 +90,15 @@ def build_homeM_view(page: ft.Page):
         controls=[
             boton_ges,
             boton_an,
-            ft.IconButton(
+            ft.PopupMenuButton(
                 icon=ft.icons.DOUBLE_ARROW,
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
+                items = [
+                    ft.PopupMenuItem(text = "Cambiar perfil"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
             ),
             # ft.Spacer(),
             ft.Text(profile_name, color=ft.colors.WHITE, size=16),
