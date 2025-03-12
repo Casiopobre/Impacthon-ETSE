@@ -15,6 +15,13 @@ def NormalLogin(page):
             text="Iniciar sesión",
             on_click=lambda _: sf.login(page, dni_field, password_field)
         )
+<<<<<<< HEAD
+        register_button = ft.ElevatedButton(
+             text="Registrarse",
+             on_click=lambda e: page.go("/session/register")
+        )
+        print("\n\n\n\n\n Hola \n\n\n\n\n")
+=======
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
@@ -22,10 +29,20 @@ def NormalLogin(page):
         )
 
         print("\n\n estás en login \n\n")
+>>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
 
         return ft.Column(
             [
                 ft.Row([
+<<<<<<< HEAD
+                        register_button
+                    ],
+                    alignment=ft.MainAxisAlignment.END),
+                dni_field,
+                password_field,
+                login_button,
+                otp_button
+=======
                     login_button,
                     register_button
                 ]),
@@ -38,6 +55,7 @@ def NormalLogin(page):
                     login_button,
                     otp_button
                 ]),
+>>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,

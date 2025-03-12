@@ -95,7 +95,7 @@ def main(page: ft.Page):
             elif e.route == "/homep":
                 # View del home del paciente
                 page.views.append(homeP_view.build_homeP_view(page))
-            elif e.route == "/sintomas":
+            #elif e.route == "/sintomas":
                 
             elif e.route.startswith("/homem"):
                 # View del home del médico
