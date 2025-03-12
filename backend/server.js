@@ -16,9 +16,9 @@ var port = process.env.PORT || 8080;
 app.use(express.json());
 
 //Conexion base de datos
-conexion = mysql.createPool({
+conexion = mysql.createConnection({
   host: process.env.HOST,
-  user: process.env.USER,
+  user: 'root',
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   port: 3306,
@@ -98,7 +98,7 @@ function autorizacionPWD(request, response) {
     jsonRespuesta = {
       usuario: dni,
       contraseña: passwd,
-      token: makeid(8),
+      token: maketoken(8),
     };
     response.json(jsonRespuesta);
   }
@@ -164,7 +164,7 @@ async function crearCuenta(request, response) {
 
   if (dni && passwd && fecha && nombreCompleto && num_tlf) {
     conexion.query(
-      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
       [dni, fecha, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
       async function (error) {
         if (error) {
@@ -175,8 +175,7 @@ async function crearCuenta(request, response) {
         } else {
           response.json({
             correcto: 1,
-            mensaje: "Cuenta creada",
-            token: token,
+            mensaje: "Cuenta creada"
           });
         }
       }
@@ -214,7 +213,7 @@ async function crearCuentaMedico(request, response) {
 
             if (dni && passwd && edad && nombreCompleto && num_tlf) {
               conexion.query(
-                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
                 [
                   dni,
                   fecha,
