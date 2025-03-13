@@ -92,13 +92,13 @@ function autorizacionPWD(request, response) {
                 correcto: 1,
                 tokenLogin: tokenLogin,
                 id: results[0].id,
-                tipoUsuario: results[0].tipoUsuario,
+                tipoUsuario: results[0].tipo,
               })
               response.json({
                 correcto: 1,
                 tokenLogin: tokenLogin,
                 id: results[0].id,
-                tipoUsuario: results[0].tipoUsuario,
+                tipoUsuario: results[0].tipo,
               });
             }
           }
@@ -148,7 +148,7 @@ function autorizacionToken(request, response) {
                       correcto: 1,
                       tokenLogin: tokenLogin,
                       id: results[0].id,
-                      tipoUsuario: results[0].tipoUsuario,
+                      tipoUsuario: results[0].tipo,
                     });
                   }
                 }
