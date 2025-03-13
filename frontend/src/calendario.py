@@ -2,6 +2,8 @@ import locale
 import flet as ft
 from datetime import datetime
 import calendar
+import homeM_funcs as hmf
+import homeP_funcs as hpf
 
 
 # Configuración del idioma
@@ -14,6 +16,8 @@ COLOR_BORDER = '#034C8C'
 COLOR_CURR_DAY = '#95C1DA'
 COLOR_BG_SEC = '#456173'
 COLOR_TEXT = '#000000'
+
+
 
 
 class Calendario:
@@ -154,14 +158,15 @@ class Calendario:
         self.page.update()
 
 
-    def get_medication_data(e):
-        return [
-            {"name": "Paracetamol", "dose": 500, "interval": 8},
-            {"name": "Ibuprofeno", "dose": 400, "interval": 6},
-            {"name": "Omeprazol", "dose": 20, "interval": 24},
-            {"name": "Amoxicilina", "dose": 750, "interval": 12},
-        ]
-    
+    def get_medication_data(self, e):
+        if self.page.client_storage.get("tipo") == "paciente":
+            return hpf.get_user_medications(self.page)
+        elif self.page.client_storage.get("tipo") == "medico":
+            return hmf.get_paciente_recetas(self.page, self.page.client_storage.get("idPaciente"))
+
+
+
+
     def create_medication_card(self, medication):
         return ft.Card(
             content=ft.Container(
@@ -201,7 +206,7 @@ class Calendario:
         medications = self.daily_data.get(date_key, {})
         for meds in medications.get("medications", []):
             medication_list.controls.append(self.create_medication_card(meds))
-        for medication in self.get_medication_data():
+        for medication in self.get_medication_data(self.page):
             medication_list.controls.append(self.create_medication_card(medication))
         dialog1 = ft.AlertDialog(
             title=ft.Text(f"Datos de {date_key}"),

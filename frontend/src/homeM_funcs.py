@@ -111,8 +111,14 @@ def get_paciente_recetas(page: ft.Page, id_paciente):
     try:
         response = requests.post(
             f"http://{shared.SERVER_IP}:8080/getRecetas",
-            json={"tokenLogin": page.client_storage.get("tokenLogin"), "pacienteId":id_paciente, "id": page.client_storage.get("id")}
+            json={"tokenLogin": page.client_storage.get("sessionToken"), "idPaciente":id_paciente, "id": page.client_storage.get("id")}
         ).json()
+        print("....................")
+        print("....................")
+        print(id_paciente)
+        print(response)
+        print("....................")
+        print("....................")
         
         if response.get("correcto") == 1 and "recetas" in response:
             # Transform the data to match the expected format
@@ -135,22 +141,6 @@ def get_paciente_recetas(page: ft.Page, id_paciente):
 
 def register_user(page: ft.Page, dni_field, name_field, password_field, fecha_nac_field):
     """Procesa el registro de un nuevo paciente."""
-    
-    # HAY QUE METER ESTA MIERDA EN SESSION VIEW NO AQUI BRO
-    # if not dni_field.value or not name_field.value or not password_field.value or not fecha_nac_field.value:
-    #     page.snack_bar = ft.SnackBar(ft.Text("Todos los campos son obligatorios"))
-    #     page.controls.append(page.snack_bar)
-    #     page.snack_bar.open = True
-    #     page.update()
-    #     return
-    
-    # {
-    # "dni":"dni",
-    # "passwd":"pwd",
-    # "fecha":"17/02/2003",
-    # "nombreCompleto":"Juan juan",
-    # "num_tlf":"677774737"
-    # }
     
     # AJUSTAR !!!!
     response = requests.post("http://"+ shared.SERVER_IP +":8080/createAct", data={

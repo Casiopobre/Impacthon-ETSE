@@ -137,15 +137,7 @@ def GestionarPacienteObtenido(page, id_paciente):
     edad = hf.calculate_age(fecha_nacimiento)
      
     
-    # Mock medications - replace with actual API calls
-    medications = [
-        {"id": 1, "nombre": "Paracetamol", "dosificacion": "1 comprimido", 
-         "fecha_fin": "2025-04-30", "intervalos_dosificacion": 8},
-        {"id": 2, "nombre": "Ibuprofeno", "dosificacion": "2 comprimidos", 
-         "fecha_fin": "2025-05-10", "intervalos_dosificacion": 12},
-        {"id": 3, "nombre": "Omeprazol", "dosificacion": "1 cápsula", 
-         "fecha_fin": "2025-06-15", "intervalos_dosificacion": 24}
-    ]
+    medications = hf.get_paciente_recetas(page, id_paciente)
     
     # Function to handle medication deletion
     def delete_medication(e, med_id):
@@ -258,10 +250,10 @@ def GestionarPacienteObtenido(page, id_paciente):
                     controls=[
                         ft.Column(
                             controls=[
-                                ft.Text(med["nombre"], weight=ft.FontWeight.BOLD),
-                                ft.Text(f"Dosificación: {med['dosificacion']}"),
-                                ft.Text(f"Intervalo: Cada {med['intervalos_dosificacion']} horas"),
-                                ft.Text(f"Fecha fin: {med['fecha_fin']}")
+                                ft.Text(med["name"], weight=ft.FontWeight.BOLD),
+                                ft.Text(f"Dosificación: {med['dose']}"),
+                                ft.Text(f"Intervalo: Cada {med['interval']} horas"),
+                                ft.Text(f"Fecha fin: {med['end_date']}")
                             ],
                             spacing=5,
                             expand=True
@@ -270,7 +262,7 @@ def GestionarPacienteObtenido(page, id_paciente):
                             icon=ft.icons.DELETE,
                             icon_color=ft.colors.RED_600,
                             tooltip="Eliminar medicación",
-                            on_click=lambda e, med_id=med["id"]: delete_medication(e, med_id)
+                            on_click=lambda e: delete_medication(e)
                         )
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN
