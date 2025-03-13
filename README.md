@@ -19,7 +19,7 @@ La aplicación se conecta a nuestra API desarrollada en NodeJS que se conecta a 
 Para la base de datos utilizamos la CIMA REST API de la AEMPS para obtener la información sobre los medicamentos.
 
 ## Instalación
-Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5. \
+Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5.
 1. Clona este repositorio
 2. En en directorio "frontend" ejecuta el comando `flet run --web` para la versión web y `flet run --android` para Android.
    > Nota: para Android es necesario tener instalada la app de Flet y que el ordenador esté conectado a la misma red que el teléfono
