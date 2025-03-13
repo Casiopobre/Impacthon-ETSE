@@ -530,6 +530,7 @@ function getRecetas(request, response) {
           mensaje: error.message,
         });
       } else {
+         console.log(results[0])
         if (results.length > 0 && (results[0].tipo="medico")) {
           conexion.query(
             "SELECT * FROM Receta WHERE id_paciente = ?",
@@ -542,7 +543,7 @@ function getRecetas(request, response) {
                   mensaje: error.message,
                 });
               }
-              console.log(results)
+             
               if (results.length === 0) {
                 return response.json({
                   correcto: 0,
