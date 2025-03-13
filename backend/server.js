@@ -372,7 +372,7 @@ function getDatosUsuario(request,response){
         });
       } else {
         console.log(results[0].tipo)
-        if (results > 0 && (results[0].tipo=="medico")) {
+        if (results.length > 0 && (results[0].tipo=="medico")) {
           console.log("Medico buscando a paciente")
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
@@ -387,7 +387,7 @@ function getDatosUsuario(request,response){
               } else {
                 
                 console.log(results > 0)
-                if (results > 0) {
+                if (results.length > 0) {
                   response.json({
                     correcto: 1,
                     nombre: results[0].nombre_completo,
@@ -422,7 +422,7 @@ function getDatosUsuario(request,response){
                 });
               } else {
                 console.log(results > 0)
-                if (results > 0) {
+                if (results.length > 0) {
                   response.json({
                     correcto: 1,
                     nombre: results[0].nombre_completo,
