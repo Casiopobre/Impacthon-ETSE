@@ -251,7 +251,7 @@ def build_homeP_view(page: ft.Page):
         controls=[
             ft.AppBar(
                 title=ft.Text("Mi medicaciooooooooooooon"),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
+                bgcolor='#034C8C',
                 actions=[nav_bar],
                       ),
             ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
