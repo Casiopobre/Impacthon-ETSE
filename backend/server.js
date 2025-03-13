@@ -384,7 +384,7 @@ function getDatosUsuario(request,response){
                   mensaje: "Error",
                 });
               } else {
-                console.log(results)
+                console.log(results > 0)
                 if (results > 0) {
                   response.json({
                     correcto: 1,
@@ -418,7 +418,7 @@ function getDatosUsuario(request,response){
                   mensaje: error.message,
                 });
               } else {
-                console.log(results)
+                console.log(results > 0)
                 if (results > 0) {
                   response.json({
                     correcto: 1,
