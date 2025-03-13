@@ -263,7 +263,7 @@ async function crearCuentaMedico(request, response) {
             mensaje: error.message,
           });
         } else {
-          if (results > 0 && (results[0].tipo="medico")) {
+          if (results.length > 0 && (results[0].tipo="medico")) {
             dni = request.body.dni;
             passwd = request.body.passwd;
             fecha = request.body.fecha;
@@ -387,7 +387,7 @@ function getDatosUsuario(request,response){
                 });
               } else {
                 
-                console.log(results > 0)
+                console.log(results.length > 0)
                 if (results.length > 0) {
                   response.json({
                     correcto: 1,
@@ -422,7 +422,7 @@ function getDatosUsuario(request,response){
                   mensaje: error.message,
                 });
               } else {
-                console.log(results > 0)
+                console.log(results.length > 0)
                 if (results.length > 0) {
                   response.json({
                     correcto: 1,
@@ -530,7 +530,7 @@ function getRecetas(request, response) {
           mensaje: error.message,
         });
       } else {
-        if (results > 0 && (results[0].tipo="medico")) {
+        if (results.length > 0 && (results[0].tipo="medico")) {
           conexion.query(
             "SELECT * FROM Receta WHERE id_paciente = ?",
             [idPaciente],
@@ -786,7 +786,7 @@ function getSintomas(request, response) {
           mensaje: error.message,
         });
       } else {
-        if (results > 0 && (results[0].tipo="medico")) {
+        if (results.length > 0 && (results[0].tipo="medico")) {
           conexion.query(
             "SELECT * FROM Sintomatologia WHERE id_paciente = ?",
             [idPaciente],
