@@ -29,12 +29,12 @@ Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o supe
 ### Paciente
 Primero inicia sesión o regístrate en la pantalla de login como paciente. \
 Para añadir un medicamento, presiona el día en el que lo quieres añadir en el calendario y completa los campos. \
-Para añadir un síntoma pulsa el botón superior ("¿Cómo te sientes hoy?") y añade un síntoma predefinido o dale al botón "+" para añadir un nuevo síntoma. \
+Para añadir un síntoma pulsa el botón superior ("¿Cómo te sientes hoy?") y añade un síntoma predefinido o dale al botón "+" para añadir un nuevo síntoma. 
 
 ### Personal sanitario
 Primero inicia sesión como presonal sanitario. \
 . . . . . . . . . . . . FAÑLTASN 
 
 ## Licencias
-Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_) \
+Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_) 
 
