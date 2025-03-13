@@ -125,18 +125,11 @@ def build_homeP_view(page: ft.Page):
             expand=True,
         )
 
-        # Second row: Calendar container
-        calendar_row = ft.Container(
-            content=calendar_container,
-            padding=ft.padding.all(20),
-            expand=False,
-        )
-
         # Return as a column with 2 rows
-        return ft.Column(
+        return ft.Row(
             controls=[
                 medication_row,
-                calendar_row,
+                calendar_container,
             ],
             expand=True,
         )
