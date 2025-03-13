@@ -118,7 +118,7 @@ function autorizacionPWD(request, response) {
   }
 }
 
-function autorizacionToken(request, response) {
+function getIdToken(request, response) {
   let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
     conexion.query(
