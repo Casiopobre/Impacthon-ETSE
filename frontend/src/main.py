@@ -28,7 +28,7 @@ def main(page: ft.Page):
     
     page.route = "/none"
     # Helper function to check if a route is a valid temporary patient route
-    #asd
+    #asda
     
     def is_valid_temp_patient_route(route):
         if route.startswith("/homem/ges"):
@@ -92,14 +92,12 @@ def main(page: ft.Page):
         elif type_checker(page) == "medico":
             page.go("/homem")
             
-    # Función para manejar el cambio de rut
+    # Función para manejar el cambio de ruta
     def reroute(e):
         page.views.clear()
         
         # Check for temporary patient routes first
-        if is_valid_temp_patient_route(e.route):
-            # Get patient ID from the temporary route data
-            page.views.append(homeM_view.GestionarPacienteObtenido(page, homeM_funcs.temp_patient_routes[e.route]["patient_id"]))
+        
     
         # Check for session token        
         if page.client_storage.get("sessionToken"):
@@ -110,7 +108,7 @@ def main(page: ft.Page):
                     
                 elif e.route.startswith("/homep"):
                     if type_checker(page) == "paciente":
-                        # View del home del paciente
+                        # View del home del pacientee
                         page.views.append(homeP_view.build_homeP_view(page))
                     else:
                         to_home_redirect(page)
@@ -123,6 +121,10 @@ def main(page: ft.Page):
                         page.views.append(homeM_view.build_homeM_view(page))
                     else:
                         to_home_redirect(page)
+            elif is_valid_temp_patient_route(e.route):
+                # Get patient ID from the temporary route data
+                page.views.append(homeM_view.GestionarPacienteObtenido(page, homeM_funcs.temp_patient_routes[e.route]["patient_id"]))
+            
             else:
                 to_home_redirect(page)
         else:
