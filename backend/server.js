@@ -380,7 +380,7 @@ function getDatosUsuario(request,response){
                 console.log(error);
                 response.json({
                   correcto: 0,
-                  mensaje: error.message,
+                  mensaje: "Error",
                 });
               } else {
                 if (results > 0) {
@@ -396,7 +396,7 @@ function getDatosUsuario(request,response){
                 }else{
                   response.json({
                     correcto: 0,
-                    mensaje: error.message,
+                    mensaje: "no hay resultados",
                   });
                 }
                
@@ -429,7 +429,7 @@ function getDatosUsuario(request,response){
                 }else{
                   response.json({
                     correcto: 0,
-                    mensaje: error.message,
+                    mensaje: "no hay resultados",
                   });
                 }
                
