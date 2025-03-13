@@ -4,47 +4,30 @@ import homeP_funcs as hpf
 import shared
 from calendario import Calendario
 
+
 def build_homeP_view(page: ft.Page):
     """
     Construye la vista principal del paciente con la lista de medicamentos y espacio para el calendario.
     """
     page.title = "Mi Medicación"
     
-    # Función para abrir el cuadro de diálogo de sentimientos
-    # def open_feeling_dialog(e):
-    #     feeling_dialog = ft.AlertDialog(
-    #         title=ft.Text("¿Cómo te sientes?"),
-    #         content=ft.Column([
-    #             ft.TextField(label="Describe cómo te sientes")
-    #         ], tight=True, spacing=20),
-    #         actions=[
-    #             ft.ElevatedButton("Cancelar", on_click=lambda e: setattr(feeling_dialog, "open", False)),
-    #             ft.ElevatedButton("Enviar", on_click=lambda e: setattr(feeling_dialog, "open", False))
-    #         ]
-    #     )
-    #     page.dialog = feeling_dialog
-    #     feeling_dialog.open = True
-    #     page.update()
-    
-    # Botón para ir al menú de síntomas
+    # Función para abrir el menú de síntomas
     def open_symptom_menu(e):
         page.go("/homep/sintomas")
         page.update()
-
-    # Botón de sentimifentos
-    # feeling_button = ft.ElevatedButton(
-    #     "¿Cómo te sientes?",
-    #     icon=ft.icons.MOOD,
-    #     on_click=open_symptom_menu,
-    #     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
-    # )
 
     # Botón para el menú de síntomas
     symptoms_button = ft.ElevatedButton(
         "Menú de Síntomas",
         icon=ft.icons.HEALTH_AND_SAFETY,
         on_click=open_symptom_menu,
-        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10), 
+            padding=ft.padding.all(25),
+            text_style=ft.TextStyle(size=24)  # Aumenta el tamaño del texto
+        ),
+        width=500,
+        height=70,
     )
 
     # Contenedor para botones en la parte superior
@@ -52,8 +35,6 @@ def build_homeP_view(page: ft.Page):
         controls=[symptoms_button],
         alignment=ft.MainAxisAlignment.CENTER,
     )
-
-    # Lista de medicamentos
     def get_medication_data():
         return hpf.get_user_medications(page)
 
@@ -92,10 +73,12 @@ def build_homeP_view(page: ft.Page):
         spacing=10, padding=20, expand=True
     )
     medications = get_medication_data()
-    
+    calendario = Calendario(page)
     if medications:
         for medication in medications:
             medication_list.controls.append(create_medication_card(medication))
+    for medication1 in calendario.daily_data.get(calendario.current_date, {}).get("medications", []):
+        medication_list.controls.append(create_medication_card(medication1))    
     else:
         medication_list.controls.append(
             ft.Container(
@@ -107,18 +90,23 @@ def build_homeP_view(page: ft.Page):
         )
         
     # Container for the calendar 
-    calendario = Calendario(page)
 
     calendar_container = ft.Container(
         content=(
             ft.Column(
                 [
-                    calendario.navigation_row, calendario.get_calendar_view()
+                    ft.Row(
+                        [
+                            calendario.navigation_row
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER
+                    ),
+                    calendario.get_calendar_view()
             ],
             alignment=ft.MainAxisAlignment.CENTER)
         ),
         padding=20,
-        expand=False
+        expand=False,
     )
 
     # Main content layout - separated in 2 rows for better adaptation
@@ -130,6 +118,7 @@ def build_homeP_view(page: ft.Page):
                     ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
                     medication_list,
                 ],
+                scroll=ft.ScrollMode.AUTO,
                 spacing=10,
             ),
             padding=ft.padding.all(20),
@@ -272,42 +261,101 @@ def build_homeP_view(page: ft.Page):
     )
 
 
-
 def build_symptom_menu_view(page: ft.Page):
-    """
-    Construye la vista del menú de síntomas con opciones seleccionables.
-    """
-    page.title = "Menú de Síntomas"
+    def on_sintoma_selected(e):
+        if e.control.content.controls[1].value == "Más opciones":
+            # Mostrar el cuadro de diálogo para ingresar síntomas y medicamentos
+            open_symtoms_details(page)  # Llamar a open_symtoms_details para mostrar el diálogo
+        else:
+            print(f"{e.control.content.controls[1].value} seleccionado")
+            page.go("/homep")
 
-    symptoms = [
-        "Dolor de cabeza",
-        "Fiebre",
-        "Tos",
-        "Cansancio",
-        "Dolor muscular",
-        "Náuseas",
-        "Vómito",
-        "Diarrea",
-        "Estreñimiento",
-        "Mareos",
-        "Congestión nasal",
-    ]
-
-    symptom_checkboxes = [ft.Checkbox(label=s, value=False) for s in symptoms]
-
-    def return_to_home(e):
-        page.go("/home")
-        page.update()
+    def create_sintoma_button(text, image_path):
+        return ft.Container(
+            content=ft.Column(
+                [
+                    ft.Image(src=f"/{image_path}", width=80, height=80), 
+                    ft.Text(text, size=14, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),  # Texto
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            width=150,  # Tamaño del botón
+            height=150,
+            alignment=ft.alignment.center,
+            bgcolor='#95C1DA',  # Color de fondo
+            border_radius=10,  # Bordes redondeados
+            on_click=on_sintoma_selected,  # Acción cuando se presiona
+            padding=10
+        )
 
     return ft.View(
         route="homep/sintomas",
         controls=[
-            ft.AppBar(title=ft.Text("Selecciona tus síntomas"), bgcolor=ft.colors.DEEP_ORANGE_800),
-            ft.Column(symptom_checkboxes, spacing=10, padding=20),
-            ft.ElevatedButton("Volver", icon=ft.icons.ARROW_BACK, on_click=return_to_home),
+            ft.AppBar(
+                title=ft.Text("Síntomas"),
+                bgcolor=ft.colors.DEEP_ORANGE_800,
+            ),
+            ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
+            ft.GridView(
+                controls=[   
+                   
+                    create_sintoma_button("Cansancio", "icono_cansancio.svg"),
+                    create_sintoma_button("Congestión", "icono_congesion.svg"),
+                    create_sintoma_button("Diarrea", "icono_diarrea.svg"),
+                    create_sintoma_button("Dolor de cabeza", "icono_dolor_cabeza.svg"),
+                    create_sintoma_button("Dolor muscular", "icono_dolor_muscular.svg"),
+                    create_sintoma_button("Estreñimiento", "icono_estrenimiento.svg"),
+                    create_sintoma_button("Fiebre", "icono_fiebre.svg"),
+                    create_sintoma_button("Mareos", "icono_mareo.svg"),
+                    create_sintoma_button("Náuseas", "icono_nauseas.svg"),
+                    create_sintoma_button("Tos", "icono_tos.svg"),
+                    create_sintoma_button("Vómito", "icono_vomito.svg"),
+                    create_sintoma_button("Más opciones", "icono_opcionMas.svg")
+                ],
+                max_extent=160,
+                spacing=10,
+                run_spacing=10,
+            )
         ],
     )
 
+def open_symtoms_details(page: ft.Page):
+    # Crear los campos de entrada para los síntomas y medicamentos
+    symptoms_input = ft.TextField(label="Síntoma")
+
+    # Función para cerrar el diálogo
+    def cerrar(e):
+        dialog.open = False
+        page.go("/homep")
+        page.update()
+
+    # Función para guardar los datos
+    def save_data(e):
+        if symptoms_input.value:
+            print(f"Síntoma: {symptoms_input.value}")  # Puedes procesar el síntoma aquí
+
+        dialog.open = False
+        # Navegar de vuelta a la vista principal (home)
+        page.go("/homep")
+        page.update()
+
+    # Crear el diálogo con los campos de entrada
+    dialog = ft.AlertDialog(
+        title=ft.Text("Registrar síntoma"),
+        content=ft.Column([
+            symptoms_input,
+        ], tight=True),
+        actions=[
+            ft.ElevatedButton("Cancelar", on_click=cerrar),
+            ft.ElevatedButton("Guardar", on_click=save_data)
+        ],
+    )
+
+    # Mostrar el diálogo
+    page.overlay.append(dialog)
+    dialog.open = True
+    page.update()
 
 def route_change(page: ft.Page):
     """

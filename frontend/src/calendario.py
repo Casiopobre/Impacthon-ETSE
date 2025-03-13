@@ -3,6 +3,7 @@ import flet as ft
 from datetime import datetime
 import calendar
 
+
 # Configuración del idioma
 locale.setlocale(locale.LC_ALL, '')  # Ajusta automáticamente al idioma del sistema
 # locale.setlocale(locale.LC_TIME, 'es_ES')  # Descomentar para forzar español en Windows
@@ -41,10 +42,11 @@ class Calendario:
             self.daily_data[date] = {"symptoms": [], "medications": []}
         self.daily_data[date]["symptoms"].append(symptom)
 
-    def add_medication(self, date, medication):
+    def add_medication(self, date, medication, dosis, intervalo):
         if date not in self.daily_data:
-            self.daily_data[date] = {"symptoms": [], "medications": []}
-        self.daily_data[date]["medications"].append(medication)
+            self.daily_data[date]= {"symptoms": [], "medications": []}
+        medicamento = {"name": medication, "dose": dosis, "interval": intervalo}
+        self.daily_data[date]["medications"].append(medicamento)
 
     def _build_ui(self):
         self.navigation_row = ft.Row(
@@ -92,14 +94,14 @@ class Calendario:
                 date_key = f"{self.current_date.year}-{self.current_date.month:02d}-{day:02d}"
                 bg_color = self.get_day_bg_color(day)
 
-                symptoms = ", ".join(self.daily_data.get(date_key, {}).get("symptoms", []))
-                medications = ", ".join(self.daily_data.get(date_key, {}).get("medications", []))
+                #symptoms = ", ".join(self.daily_data.get(date_key, {}).get("symptoms", []))
+                #medications = ", ".join(self.daily_data.get(date_key, {}).get("medications", []))
 
                 day_content = ft.Column(
                     [
                         ft.Text(day_text, text_align="center", color=COLOR_TEXT, weight="bold"),
-                        ft.Text(f"Symptoms {symptoms}" if symptoms else "", size=10, color=ft.colors.RED_500),
-                        ft.Text(f"Medications {medications}" if medications else "", size=10, color=ft.colors.BLUE_500)
+                        #ft.Text(f"Symptoms {symptoms}" if symptoms else "", size=10, color=ft.colors.RED_500),
+                        #ft.Text(f"Medications {medications}" if medications else "", size=10, color=ft.colors.BLUE_500)
                     ],
                     alignment=ft.alignment.center,
                     spacing=2
@@ -113,7 +115,7 @@ class Calendario:
                         bgcolor=self.get_day_bg_color(day),
                         border=ft.border.all(1, COLOR_BORDER),
                         border_radius=5,
-                        on_click=lambda e, d=date_key: self.open_day_details(d)
+                        on_click=lambda e, d=date_key: self.open_day_data(d)
                     )
                 )
         
@@ -122,16 +124,15 @@ class Calendario:
         self.page.update()
 
     def open_day_details(self, date_key):
-        symptoms_input = ft.TextField(label="Síntoma")
         medication_input = ft.TextField(label="Medicamento")
+        dosis_input = ft.TextField(label="Dosis")
+        intervalo_input = ft.TextField(label="Intervalo")
         def cerrar(e):
             dialog.open = False
             self.page.update()
         def save_data(e):
-            if symptoms_input.value:
-                self.add_symptom(date_key, symptoms_input.value)
             if medication_input.value:
-                self.add_medication(date_key, medication_input.value)
+                self.add_medication(date_key, medication_input.value, dosis_input.value, intervalo_input.value)
             
             dialog.open = False
             self.update_calendar()
@@ -139,8 +140,9 @@ class Calendario:
         dialog = ft.AlertDialog(
             title=ft.Text(f"Registrar datos para {date_key}"),
             content=ft.Column([
-                symptoms_input,
-                medication_input
+                medication_input,
+                dosis_input,
+                intervalo_input
             ], tight=True),
             actions=[
                 ft.ElevatedButton("Cancelar", on_click=cerrar),
@@ -149,6 +151,83 @@ class Calendario:
         )
         self.page.overlay.append(dialog)
         dialog.open = True
+        self.page.update()
+
+
+    def get_medication_data(e):
+        return [
+            {"name": "Paracetamol", "dose": 500, "interval": 8},
+            {"name": "Ibuprofeno", "dose": 400, "interval": 6},
+            {"name": "Omeprazol", "dose": 20, "interval": 24},
+            {"name": "Amoxicilina", "dose": 750, "interval": 12},
+        ]
+    
+    def create_medication_card(self, medication):
+        return ft.Card(
+            content=ft.Container(
+                content=ft.Row(
+                    [
+                        ft.Icon(ft.icons.MEDICATION, size=40, color=ft.colors.BLUE_400),
+                        ft.Column(
+                            [
+                                ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16),
+                                ft.Text(f"Dosis: {medication["dose"]} mg"),
+                                ft.Text(f"Intervalo: Cada {medication["interval"]} horas"),
+                            ],
+                            spacing=5,
+                            width=400
+                        ),
+                    ],
+                    width=400
+                ),
+                padding=15,
+                width=400
+            ),
+            margin=ft.margin.only(bottom=10),
+            width=400,
+        )
+    
+    def open_day_data(self, date_key):
+        def open_ajustes(e):
+            dialog1.open=False
+            self.page.overlay.clear()
+            self.open_day_details(date_key)
+        def cerrar(e):
+            dialog1.open = False 
+            self.page.update()
+        medication_list = ft.ListView(
+            spacing=10, padding=20, expand=True, width=400, auto_scroll=True,
+        )
+        medications = self.daily_data.get(date_key, {})
+        for meds in medications.get("medications", []):
+            medication_list.controls.append(self.create_medication_card(meds))
+        for medication in self.get_medication_data():
+            medication_list.controls.append(self.create_medication_card(medication))
+        dialog1 = ft.AlertDialog(
+            title=ft.Text(f"Datos de {date_key}"),
+            content=ft.Column(
+                [
+                    ft.Text(value="Medicamentos"),
+                    ft.Container(
+                        content=medication_list,
+                        padding=20,
+                        width= 400,
+                    ),
+                    ft.Text(value="Sintomas")
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                width=400,
+                scroll=ft.ScrollMode.AUTO
+            ),
+            actions= [
+                ft.IconButton(icon=ft.icons.ADD_CIRCLE, on_click=open_ajustes),
+                ft.IconButton(icon=ft.icons.CLOSE, on_click=cerrar)
+            ],
+            modal=True,
+            content_padding=20
+        )
+        self.page.overlay.append(dialog1)
+        dialog1.open = True
         self.page.update()
 
     def get_day_bg_color(self, day):

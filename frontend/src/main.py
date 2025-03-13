@@ -13,6 +13,8 @@ import homeM_funcs  # Import to access temp_patient_routes
 def main(page: ft.Page):
     page.adaptive = True
     page.title = "Iniciar sesión"
+
+    page.pub_static_dir = "frontend/src/assets" 
     
     # Define fixed routes
     routes = [

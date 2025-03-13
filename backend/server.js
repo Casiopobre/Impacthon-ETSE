@@ -56,13 +56,18 @@ function checkTokenJWT(token, id) {
 //Rutas get
 
 //Rutas post
+app.post("/getTipoUsuario",getTipoUsuario);
 app.post("/getRecetas", getRecetas);
 app.post("/authPWD", autorizacionPWD);
 app.post("/authToken", autorizacionToken);
+app.post("/crearTokenEditar", crearTokenEditar);
+app.post("/getIdToken", getIdToken);
+app.post("/getDatosUsuario", getDatosUsuario);
 app.post("/createActMedico", crearCuentaMedico);
 app.post("/createAct", crearCuenta);
 app.post("/insertarRecetas", insertarRecetas);
 app.post("/insertarSintomas", insertarSintomas);
+app.post("/getSintomas", getSintomas);
 
 //-------------  FUNCIONES  -------------
 //Funciones get
@@ -92,13 +97,13 @@ function autorizacionPWD(request, response) {
                 correcto: 1,
                 tokenLogin: tokenLogin,
                 id: results[0].id,
-                tipoUsuario: results[0].tipoUsuario,
+                tipoUsuario: results[0].tipo,
               })
               response.json({
                 correcto: 1,
                 tokenLogin: tokenLogin,
                 id: results[0].id,
-                tipoUsuario: results[0].tipoUsuario,
+                tipoUsuario: results[0].tipo,
               });
             }
           }
@@ -118,7 +123,7 @@ function autorizacionToken(request, response) {
   let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
     conexion.query(
-      "SELECT * FROM CodigoQR WHERE token = ? ",
+      "SELECT * FROM codigoQR WHERE token = ? ",
       [tokenLogin],
       async function (error, results, fields) {
         if (error) {
@@ -149,6 +154,51 @@ function autorizacionToken(request, response) {
                       tokenLogin: tokenLogin,
                       id: results[0].id,
                       tipoUsuario: results[0].tipoUsuario,
+                    });
+                  }
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+  }
+}
+
+
+function getIdToken(request, response) {
+  let token = request.body.token;
+  if (token) {
+    conexion.query(
+      "SELECT * FROM codigoQR WHERE token = ? ",
+      [tokenLogin],
+      async function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          response.json({
+            correcto: 0,
+            mensaje: error.message,
+          });
+        } else {
+          if (results.length > 0) {
+            idPaciente = results[0].paciente;
+            conexion.query(
+              "SELECT * FROM Usuario WHERE id = ? ",
+              [idPaciente],
+              async function (error, results, fields) {
+                if (error) {
+                  console.log(error);
+                  response.json({
+                    correcto: 0,
+                    mensaje: error.message,
+                  });
+                } else {
+                  if (results.length > 0) {
+                    id = results[0].id;
+                    response.json({
+                      correcto: 1,
+                      id: results[0].id,
                     });
                   }
                 }
@@ -213,7 +263,7 @@ async function crearCuentaMedico(request, response) {
             mensaje: error.message,
           });
         } else {
-          if (results > 0) {
+          if (results.length > 0 && (results[0].tipo="medico")) {
             dni = request.body.dni;
             passwd = request.body.passwd;
             fecha = request.body.fecha;
@@ -255,7 +305,7 @@ async function crearCuentaMedico(request, response) {
                             id = results[0].id;
                             token = maketoken(10);
                             conexion.query(
-                              "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+                              "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
                               [token, id, "login"],
                               async function (error) {
                                 if (error) {
@@ -302,68 +352,300 @@ async function crearCuentaMedico(request, response) {
   }
 }
 
+function getDatosUsuario(request,response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Usuario WHERE id = ? ",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      } else {
+        console.log(results[0].tipo)
+        if (results.length > 0 && (results[0].tipo=="medico")) {
+          console.log("Medico buscando a paciente")
+          conexion.query(
+            "SELECT * FROM Usuario WHERE id = ? ",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                response.json({
+                  correcto: 0,
+                  mensaje: "Error",
+                });
+              } else {
+                
+                console.log(results.length > 0)
+                if (results.length > 0) {
+                  response.json({
+                    correcto: 1,
+                    nombre: results[0].nombre_completo,
+                    dni:results[0].dni,
+                    fechaNacimiento:results[0].fecha_nac,
+                    email:results[0].email,
+                    numTlf:results[0].num_tlf
+                  });
+                  
+                }else{
+                  response.json({
+                    correcto: 0,
+                    mensaje: "no hay resultados",
+                  });
+                }
+               
+              }
+            }
+          );
+          
+        }else{
+          console.log("Paciente comprobando sus datos")
+          conexion.query(
+            "SELECT * FROM Usuario WHERE id = ? ",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              } else {
+                console.log(results.length > 0)
+                if (results.length > 0) {
+                  response.json({
+                    correcto: 1,
+                    nombre: results[0].nombre_completo,
+                    dni:results[0].dni,
+                    fechaNacimiento:results[0].fecha_nac,
+                    email:results[0].email,
+                    numTlf:results[0].num_tlf
+                  });
+                  
+                }else{
+                  response.json({
+                    correcto: 0,
+                    mensaje: "no hay resultados",
+                  });
+                }
+               
+              }
+            }
+          );
+          
+        }
+       
+      }
+    }
+  );
+
+
+}
+
+function crearTokenEditar(request, response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+  token = maketoken(10);
+  conexion.query(
+    "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
+    [token, id, "editar"],
+    async function (error) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      } else {
+        response.json({
+          correcto: 1,
+          mensaje: "Token creado",
+          token: token,
+        });
+      }
+    }
+  );
+}
+
+function crearTokenEditar(request, response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+  token = maketoken(10);
+  conexion.query(
+    "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
+    [token, id, "editar"],
+    async function (error) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: "Error al crear el token",
+        });
+      } else {
+        response.json({
+          correcto: 1,
+          mensaje: "Token creado",
+          token: token,
+        });
+      }
+    }
+  );
+}
+
 function getRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
   
   if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
     return response.json({ correcto: 0 });
   }
 
   conexion.query(
-    "SELECT * FROM Receta WHERE id_paciente = ?",
+    "SELECT * FROM Usuario WHERE id = ? ",
     [id],
     async function (error, results, fields) {
       if (error) {
         console.log(error);
-        return response.json({
+        response.json({
           correcto: 0,
           mensaje: error.message,
         });
-      }
-
-      if (results.length === 0) {
-        return response.json({
-          correcto: 0,
-          mensaje: "Este paciente no tiene recetas",
-        });
-      }
-
-      try {
-        const recetas = await Promise.all(results.map(async (receta) => {
-          const [medicamento] = await new Promise((resolve, reject) => {
-            conexion.query(
-              "SELECT nombre FROM Medicamento WHERE id = ?",
-              [receta.id_medicamento],
-              (error, resultsMed) => {
-                if (error) reject(error);
-                else resolve(resultsMed);
+      } else {
+        if (results.length > 0 && (results[0].tipo="medico")) {
+          conexion.query(
+            "SELECT * FROM Receta WHERE id_paciente = ?",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
               }
-            );
-          });
+        
+              if (results.length === 0) {
+                return response.json({
+                  correcto: 0,
+                  mensaje: "Este paciente no tiene recetas",
+                });
+              }
+        
+              try {
+                const recetas = await Promise.all(results.map(async (receta) => {
+                  const [medicamento] = await new Promise((resolve, reject) => {
+                    conexion.query(
+                      "SELECT nombre FROM Medicamento WHERE id = ?",
+                      [receta.id_medicamento],
+                      (error, resultsMed) => {
+                        if (error) reject(error);
+                        else resolve(resultsMed);
+                      }
+                    );
+                  });
+        
+                  return {
+                    nombre: medicamento ? medicamento.nombre : 'Desconocido',
+                    fechaEmision: receta.fecha_emision,
+                    fechaFin: receta.fecha_fin,
+                    dosificacion: receta.dosificacion,
+                    intervalosDosificacion: receta.intervalos_dosificacion,
+                  };
+                }));
+        
+                response.json({
+                  correcto: 1,
+                  recetas: recetas,
+                });
+              } catch (err) {
+                console.error(err);
+                response.json({
+                  correcto: 0,
+                  mensaje: "Error al procesar las recetas",
+                });
+              }
+            }
+          );
+        }else{
+          conexion.query(
+            "SELECT * FROM Receta WHERE id_paciente = ?",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }
+        
+              if (results.length === 0) {
+                return response.json({
+                  correcto: 0,
+                  mensaje: "Este paciente no tiene recetas",
+                });
+              }
+        
+              try {
+                const recetas = await Promise.all(results.map(async (receta) => {
+                  const [medicamento] = await new Promise((resolve, reject) => {
+                    conexion.query(
+                      "SELECT nombre FROM Medicamento WHERE id = ?",
+                      [receta.id_medicamento],
+                      (error, resultsMed) => {
+                        if (error) reject(error);
+                        else resolve(resultsMed);
+                      }
+                    );
+                  });
+        
+                  return {
+                    nombre: medicamento ? medicamento.nombre : 'Desconocido',
+                    fechaEmision: receta.fecha_emision,
+                    fechaFin: receta.fecha_fin,
+                    dosificacion: receta.dosificacion,
+                    intervalosDosificacion: receta.intervalos_dosificacion,
+                  };
+                }));
+        
+                response.json({
+                  correcto: 1,
+                  recetas: recetas,
+                });
+              } catch (err) {
+                console.error(err);
+                response.json({
+                  correcto: 0,
+                  mensaje: "Error al procesar las recetas",
+                });
+              }
+            }
+          );
+        }}})
 
-          return {
-            nombre: medicamento ? medicamento.nombre : 'Desconocido',
-            fechaEmision: receta.fecha_emision,
-            fechaFin: receta.fecha_fin,
-            dosificacion: receta.dosificacion,
-            intervalosDosificacion: receta.intervalos_dosificacion,
-          };
-        }));
 
-        response.json({
-          correcto: 1,
-          recetas: recetas,
-        });
-      } catch (err) {
-        console.error(err);
-        response.json({
-          correcto: 0,
-          mensaje: "Error al procesar las recetas",
-        });
-      }
-    }
-  );
+
+
+  
 }
 
 
@@ -424,9 +706,9 @@ function insertarSintomas(request, response) {
       conexion.query(
         "INSERT into Sintomatologia (id_paciente,fecha,sintomas) values(?,?,?)",
         [
-          receta.id,
-          receta.fecha,
-          receta.sintomas
+          id,
+          fecha,
+          sintomas
         ],
         async function (error) {
           if (error) {
@@ -446,6 +728,129 @@ function insertarSintomas(request, response) {
 
     }
   }
+}
+
+
+
+function getTipoUsuario(request,response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Usuario WHERE id = ?",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      }
+      if (results.length > 0) {
+          console.log(results[0])
+          return response.json({
+            correcto: 1,
+            tipoUsuario: results[0].tipo
+          });
+      }else{
+        return response.json({
+          correcto: 0,
+          mensaje: "Este paciente no existe",
+        });
+      }})
+}
+
+function getSintomas(request, response) {
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Usuario WHERE id = ? ",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      } else {
+        if (results.length > 0 && (results[0].tipo="medico")) {
+          conexion.query(
+            "SELECT * FROM Sintomatologia WHERE id_paciente = ?",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }else{
+                if(results.length > 0){
+                  let sintomas = []
+                  for (const sintoma in results) {
+                   sintomas[sintoma] = results[sintoma]
+                  }
+                  return response.json({
+                    correcto: 1,
+                    sintomas: sintomas,
+                  });
+
+                }else{
+                  return response.json({
+                    correcto: 0,
+                    mensaje: "Este paciente no tiene sintomas",
+                  });
+                }
+              }})
+        }else{
+          conexion.query(
+            "SELECT * FROM Sintomatologia WHERE id_paciente = ?",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }else{
+                if(results.length > 0){
+                  let sintomas = []
+                  for (const sintoma in results) {
+                   sintomas[sintoma] = results[sintoma]
+                  }
+                  return response.json({
+                    correcto: 1,
+                    sintomas: sintomas,
+                  });
+
+                }else{
+                  return response.json({
+                    correcto: 0,
+                    mensaje: "Este paciente no tiene sintomas",
+                  });
+                }
+              }})
+              }
+        }})
+
+
+
+
+  
 }
 
 // app.del('/', function(req, res) {
