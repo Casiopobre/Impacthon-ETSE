@@ -17,13 +17,15 @@ Presenta una interfaz sencilla con el objetivo de llegar al mayor público posib
 EZEQUIEL EXPLICA
 Para la base de datos utilizamos la CIMA REST API de la AEMPS para obtener la información sobre los medicamentos.
 
-## Despliegue
-> Instrucciones para que cualquier usuario pueda runear la app
+## Instalación
+> Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5.
+1. Clona este repositorio
+2. En en directorio frontend ejecuta el comando `flet run --web` para la versión web y `flet run --android` para Android.
+   > Nota: para Android es necesario tener instalada la app de Flet
 
 ## Instrucciones de uso
 > Como se usa la app
 
 ## Licencias
-Iconos de síntomas: SeungJun for TheNounProject (Creative Commons Attribution License (CC BY 3.0))
---CIMA REST API (Public Domain)--
+Iconos de síntomas: SeungJun for TheNounProject (Creative Commons Attribution License (CC BY 3.0)) \
 
