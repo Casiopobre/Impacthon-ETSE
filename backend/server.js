@@ -56,6 +56,7 @@ function checkTokenJWT(token, id) {
 //Rutas get
 
 //Rutas post
+app.post("/getTipoUsuario",getTipoUsuario);
 app.post("/getRecetas", getRecetas);
 app.post("/authPWD", autorizacionPWD);
 app.post("/authToken", autorizacionToken);
@@ -446,6 +447,40 @@ function insertarSintomas(request, response) {
 
     }
   }
+}
+
+function getTipoUsuario(request,response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Receta WHERE id_paciente = ?",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      }
+
+      if (results.length >= 0) {
+        
+          return response.json({
+            correcto: 1,
+            tipoUsuario: results[0].tipo
+          });
+      }else{
+        return response.json({
+          correcto: 0,
+          mensaje: "Este paciente no existe",
+        });
+      }})
 }
 
 // app.del('/', function(req, res) {
