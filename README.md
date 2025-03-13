@@ -35,8 +35,8 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
 2. **Instalar las dependencias necesarias** con el comando correspondiente según el sistema (ej, `npm install` para Node.js o `pip install -r requirements.txt` para Python).
 3. **Configurar el entorno**. Necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5.
 4. **Ejecutar la aplicación** con los comandos especificos según la plataforma:
-   -Para web: `npm start` o `python app.py`
-   -Para Android: Compilar la app con Android Studio y desplegar en un dispositivo o emulador.
+   + Para web: `npm start` o `python app.py`
+   + Para Android: Compilar la app con Android Studio y desplegar en un dispositivo o emulador.
       >Nota: es imprescindible tener la app de Flet y que el ordenador esté conectado a la misma red que el teléfono.
 
 ## Instrucciones de uso
