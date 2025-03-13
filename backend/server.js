@@ -60,6 +60,9 @@ app.post("/getTipoUsuario",getTipoUsuario);
 app.post("/getRecetas", getRecetas);
 app.post("/authPWD", autorizacionPWD);
 app.post("/authToken", autorizacionToken);
+app.post("/crearTokenEditar", crearTokenEditar);
+app.post("/getIdToken", getIdToken);
+app.post("/getDatosUsuario", getDatosUsuario);
 app.post("/createActMedico", crearCuentaMedico);
 app.post("/createAct", crearCuenta);
 app.post("/insertarRecetas", insertarRecetas);
@@ -214,7 +217,7 @@ async function crearCuentaMedico(request, response) {
             mensaje: error.message,
           });
         } else {
-          if (results > 0) {
+          if (results > 0 && (results[0].tipo="medico")) {
             dni = request.body.dni;
             passwd = request.body.passwd;
             fecha = request.body.fecha;
@@ -303,68 +306,294 @@ async function crearCuentaMedico(request, response) {
   }
 }
 
+function getDatosUsuario(request,response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Usuario WHERE id = ? ",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      } else {
+        if (results > 0 && (results[0].tipo="medico")) {
+          conexion.query(
+            "SELECT * FROM Usuario WHERE id = ? ",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              } else {
+                if (results > 0) {
+                  response.json({
+                    correcto: 1,
+                    nombre: results[0].nombre_completo,
+                    dni:results[0].dni,
+                    fechaNacimiento:results[0].fecha_nac,
+                    email:results[0].email,
+                    numTlf:results[0].num_tlf
+                  });
+                  
+                }else{
+                  response.json({
+                    correcto: 0,
+                    mensaje: error.message,
+                  });
+                }
+               
+              }
+            }
+          );
+          
+        }else{
+          conexion.query(
+            "SELECT * FROM Usuario WHERE id = ? ",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              } else {
+                if (results > 0) {
+                  response.json({
+                    correcto: 1,
+                    nombre: results[0].nombre_completo,
+                    dni:results[0].dni,
+                    fechaNacimiento:results[0].fecha_nac,
+                    email:results[0].email,
+                    numTlf:results[0].num_tlf
+                  });
+                  
+                }else{
+                  response.json({
+                    correcto: 0,
+                    mensaje: error.message,
+                  });
+                }
+               
+              }
+            }
+          );
+          
+        }
+       
+      }
+    }
+  );
+
+
+}
+
+function crearTokenEditar(request, response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+  token = maketoken(10);
+  conexion.query(
+    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+    [token, id, "editar"],
+    async function (error) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: "Error al crear el token",
+        });
+      } else {
+        response.json({
+          correcto: 1,
+          mensaje: "Token creado",
+          token: token,
+        });
+      }
+    }
+  );
+}
+
+function crearTokenEditar(request, response){
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+  token = maketoken(10);
+  conexion.query(
+    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+    [token, id, "editar"],
+    async function (error) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: "Error al crear el token",
+        });
+      } else {
+        response.json({
+          correcto: 1,
+          mensaje: "Token creado",
+          token: token,
+        });
+      }
+    }
+  );
+}
+
 function getRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
   
   if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
     return response.json({ correcto: 0 });
   }
 
   conexion.query(
-    "SELECT * FROM Receta WHERE id_paciente = ?",
+    "SELECT * FROM Usuario WHERE id = ? ",
     [id],
     async function (error, results, fields) {
       if (error) {
         console.log(error);
-        return response.json({
+        response.json({
           correcto: 0,
           mensaje: error.message,
         });
-      }
-
-      if (results.length === 0) {
-        return response.json({
-          correcto: 0,
-          mensaje: "Este paciente no tiene recetas",
-        });
-      }
-
-      try {
-        const recetas = await Promise.all(results.map(async (receta) => {
-          const [medicamento] = await new Promise((resolve, reject) => {
-            conexion.query(
-              "SELECT nombre FROM Medicamento WHERE id = ?",
-              [receta.id_medicamento],
-              (error, resultsMed) => {
-                if (error) reject(error);
-                else resolve(resultsMed);
+      } else {
+        if (results > 0 && (results[0].tipo="medico")) {
+          conexion.query(
+            "SELECT * FROM Receta WHERE id_paciente = ?",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
               }
-            );
-          });
+        
+              if (results.length === 0) {
+                return response.json({
+                  correcto: 0,
+                  mensaje: "Este paciente no tiene recetas",
+                });
+              }
+        
+              try {
+                const recetas = await Promise.all(results.map(async (receta) => {
+                  const [medicamento] = await new Promise((resolve, reject) => {
+                    conexion.query(
+                      "SELECT nombre FROM Medicamento WHERE id = ?",
+                      [receta.id_medicamento],
+                      (error, resultsMed) => {
+                        if (error) reject(error);
+                        else resolve(resultsMed);
+                      }
+                    );
+                  });
+        
+                  return {
+                    nombre: medicamento ? medicamento.nombre : 'Desconocido',
+                    fechaEmision: receta.fecha_emision,
+                    fechaFin: receta.fecha_fin,
+                    dosificacion: receta.dosificacion,
+                    intervalosDosificacion: receta.intervalos_dosificacion,
+                  };
+                }));
+        
+                response.json({
+                  correcto: 1,
+                  recetas: recetas,
+                });
+              } catch (err) {
+                console.error(err);
+                response.json({
+                  correcto: 0,
+                  mensaje: "Error al procesar las recetas",
+                });
+              }
+            }
+          );
+        }else{
+          conexion.query(
+            "SELECT * FROM Receta WHERE id_paciente = ?",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }
+        
+              if (results.length === 0) {
+                return response.json({
+                  correcto: 0,
+                  mensaje: "Este paciente no tiene recetas",
+                });
+              }
+        
+              try {
+                const recetas = await Promise.all(results.map(async (receta) => {
+                  const [medicamento] = await new Promise((resolve, reject) => {
+                    conexion.query(
+                      "SELECT nombre FROM Medicamento WHERE id = ?",
+                      [receta.id_medicamento],
+                      (error, resultsMed) => {
+                        if (error) reject(error);
+                        else resolve(resultsMed);
+                      }
+                    );
+                  });
+        
+                  return {
+                    nombre: medicamento ? medicamento.nombre : 'Desconocido',
+                    fechaEmision: receta.fecha_emision,
+                    fechaFin: receta.fecha_fin,
+                    dosificacion: receta.dosificacion,
+                    intervalosDosificacion: receta.intervalos_dosificacion,
+                  };
+                }));
+        
+                response.json({
+                  correcto: 1,
+                  recetas: recetas,
+                });
+              } catch (err) {
+                console.error(err);
+                response.json({
+                  correcto: 0,
+                  mensaje: "Error al procesar las recetas",
+                });
+              }
+            }
+          );
+        }}})
 
-          return {
-            nombre: medicamento ? medicamento.nombre : 'Desconocido',
-            fechaEmision: receta.fecha_emision,
-            fechaFin: receta.fecha_fin,
-            dosificacion: receta.dosificacion,
-            intervalosDosificacion: receta.intervalos_dosificacion,
-          };
-        }));
 
-        response.json({
-          correcto: 1,
-          recetas: recetas,
-        });
-      } catch (err) {
-        console.error(err);
-        response.json({
-          correcto: 0,
-          mensaje: "Error al procesar las recetas",
-        });
-      }
-    }
-  );
+
+
+  
 }
 
 
@@ -425,9 +654,9 @@ function insertarSintomas(request, response) {
       conexion.query(
         "INSERT into Sintomatologia (id_paciente,fecha,sintomas) values(?,?,?)",
         [
-          receta.id,
-          receta.fecha,
-          receta.sintomas
+          id,
+          fecha,
+          sintomas
         ],
         async function (error) {
           if (error) {
@@ -448,6 +677,8 @@ function insertarSintomas(request, response) {
     }
   }
 }
+
+
 
 function getTipoUsuario(request,response){
   let tokenLogin = request.body.tokenLogin;
