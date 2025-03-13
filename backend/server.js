@@ -118,6 +118,54 @@ function autorizacionPWD(request, response) {
   }
 }
 
+function autorizacionToken(request, response) {
+  let tokenLogin = request.body.tokenLogin;
+  if (tokenLogin) {
+    conexion.query(
+      "SELECT * FROM CodigoQR WHERE token = ? ",
+      [tokenLogin],
+      async function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          response.json({
+            correcto: 0,
+            mensaje: error.message,
+          });
+        } else {
+          if (results.length > 0) {
+            idPaciente = results[0].paciente;
+            conexion.query(
+              "SELECT * FROM Usuario WHERE id = ? ",
+              [idPaciente],
+              async function (error, results, fields) {
+                if (error) {
+                  console.log(error);
+                  response.json({
+                    correcto: 0,
+                    mensaje: error.message,
+                  });
+                } else {
+                  if (results.length > 0) {
+                    id = results[0].id;
+                    let tokenLogin = generateAccessToken(id);
+                    response.json({
+                      correcto: 1,
+                      tokenLogin: tokenLogin,
+                      id: results[0].id,
+                      tipoUsuario: results[0].tipoUsuario,
+                    });
+                  }
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+  }
+}
+
+
 function getIdToken(request, response) {
   let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
