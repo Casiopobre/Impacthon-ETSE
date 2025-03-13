@@ -193,6 +193,7 @@ def open_symtoms_details(page: ft.Page):
     # Función para cerrar el diálogo
     def cerrar(e):
         dialog.open = False
+        page.go("/homep")
         page.update()
 
     # Función para guardar los datos
