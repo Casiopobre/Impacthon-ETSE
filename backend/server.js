@@ -531,7 +531,7 @@ function getRecetas(request, response) {
         });
       } else {
          console.log(results[0])
-        if (results.length > 0 && (results[0].tipo="medico")) {
+        if (results.length > 0 && (results[0].tipo=="medico")) {
           conexion.query(
             "SELECT * FROM Receta WHERE id_paciente = ?",
             [idPaciente],
