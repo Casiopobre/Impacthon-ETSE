@@ -56,7 +56,7 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
    Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas. Además, basándose en los datos recopilados, la aplicacion puede generar reportes y gráficos para facilitar la toma de decisiones médicas.
    
 ## Licencias
-+ Código fuete: Este software está licenciado bajo una licencia de código abierto, permitiendo su uso, modificación y distribución bajo ciertas condiciones.
++ Código fuente: Este software está licenciado bajo una licencia de código abierto, permitiendo su uso, modificación y distribución bajo ciertas condiciones.
 + Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_)
 + Datos de medicamentos: La información sobre medicamentos se obtiene a través de la CIMA REST API de la AEMPS, cuyos datos están sujetos a los términos y condiciones establecidos por la Agencia Española de Medicamentos y Productos Sanitarios.
 + Bibiotecas y frameworks: Se utilizan diversas tecnologías de terceros, cada una con sus propias licencias. Entre ellas:
