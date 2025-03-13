@@ -175,8 +175,19 @@ def build_symptom_menu_view(page: ft.Page):
             ),
             ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
             ft.GridView(
-               controls=[
+                controls=[   
+                   
+                    create_sintoma_button("Cansancio", "icono_cansancio.svg"),
+                    create_sintoma_button("Congestión", "icono_congesion.svg"),
+                    create_sintoma_button("Diarrea", "icono_diarrea.svg"),
+                    create_sintoma_button("Dolor de cabeza", "icono_dolor_cabeza.svg"),
+                    create_sintoma_button("Dolor muscular", "icono_dolor_muscular.svg"),
+                    create_sintoma_button("Estreñimiento", "icono_estrenimiento.svg"),
+                    create_sintoma_button("Fiebre", "icono_fiebre.svg"),
                     create_sintoma_button("Mareos", "icono_mareo.svg"),
+                    create_sintoma_button("Náuseas", "icono_nauseas.svg"),
+                    create_sintoma_button("Tos", "icono_tos.svg"),
+                    create_sintoma_button("Vómito", "icono_vomito.svg"),
                     create_sintoma_button("Más opciones", "icono_opcionMas.svg")
                 ],
                 max_extent=160,
