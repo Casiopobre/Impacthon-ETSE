@@ -122,18 +122,20 @@ def build_homeM_view(page: ft.Page):
             Vis
         ],
     )
-    
+
+
+
 def GestionarPacienteObtenido(page, id_paciente):
     """Builds the patient data management view for medical professionals."""
     # Mock patient data - replace with actual API calls
-    patient_data = {
-        "id": id_paciente,
-        "nombre": "Paciente Ejemplo",
-        "edad": 45,
-        "dni": "12345678X",
-        "fecha_nacimiento": "1980-01-15",
-        "num_tlf": "666123456"
-    }
+    
+    nombre = hf.temp_patient_data[id_paciente].get("nombre")
+    fecha_nacimiento = hf.temp_patient_data[id_paciente].get("fecha_nacimiento")
+    dni = hf.temp_patient_data[id_paciente].get("dni")
+    email = hf.temp_patient_data[id_paciente].get("email")
+    num_tlf = hf.temp_patient_data[id_paciente].get("numTlf")
+    edad = hf.calculate_age(fecha_nacimiento)
+     
     
     # Mock medications - replace with actual API calls
     medications = [
@@ -169,15 +171,15 @@ def GestionarPacienteObtenido(page, id_paciente):
         content=ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Text(f"{patient_data['nombre']}", 
+                    ft.Text(f"{nombre}", 
                             weight=ft.FontWeight.BOLD, 
                             size=20),
                     ft.Divider(),
-                    ft.Text(f"DNI: {patient_data['dni']}"),
-                    ft.Text(f"Edad: {patient_data['edad']} años"),
-                    ft.Text(f"Fecha nacimiento: {patient_data['fecha_nacimiento']}"),
-                    ft.Text(f"Teléfono: {patient_data['num_tlf']}"),
-                    ft.Container(height=5),  # Spacer
+                    ft.Text(f"DNI: {dni}"),
+                    ft.Text(f"Edad: {edad} años"),
+                    ft.Text(f"Fecha nacimiento: {fecha_nacimiento}"),
+                    ft.Text(f"Teléfono: {num_tlf}"),
+                    ft.Container(height=20),  # Spacer
                     ft.ElevatedButton(
                         "Modificar datos",
                         icon=ft.icons.EDIT,
