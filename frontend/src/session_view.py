@@ -23,26 +23,29 @@ def NormalLogin(page):
 
         print("\n\n estás en login \n\n")
 
-        return ft.Column(
-            [
-                ft.Row([
-                    login_button,
-                    register_button
-                ]),
-                ft.Row([
+        return ft.Row([
+            ft.Container(
+                ft.Column(controls=[
                     dni_field,
                     password_field,
-
-                ]),
-                ft.Row([                    
                     login_button,
-                    otp_button
-                ]),
+                    otp_button,
+                    register_button
+                    ],
+                    spacing=10,
+                    alignment = ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER    
+                ),
+                gradient= ft.LinearGradient([shared.SERGAS_1_HEX, 'blue']),     
+                width=380,
+                height =460,
+                border_radius=20,
+                margin=5
+            )
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+            alignment = ft.MainAxisAlignment.CENTER,
         )
+        
 
 
 def OptLogin(page):
@@ -109,7 +112,6 @@ def build_view(page: ft.Page):
     #   - Estamos cooked
     # --#-- !!! --#--
     selected_index = 0
-        
     components = []
     route_returned="/"
     if page.route == "/session/login":
@@ -126,7 +128,7 @@ def build_view(page: ft.Page):
     content_container = ft.Container(
         content=components,
         alignment=ft.alignment.center,
-        bgcolor=ft.colors.WHITE,
+        bgcolor=None,
         padding=20,
         border_radius=10,
         shadow=ft.BoxShadow(blur_radius=10, spread_radius=2, color=ft.colors.BLACK12),
@@ -137,6 +139,7 @@ def build_view(page: ft.Page):
     # Create the top-level view
     return ft.View(
         route=route_returned,
+        bgcolor=ft.colors.GREY,
         controls=[
             # Optionally an AppBar:
             ft.AppBar(
