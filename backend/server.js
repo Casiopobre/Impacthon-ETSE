@@ -464,7 +464,7 @@ function crearTokenEditar(request, response){
         console.log(error);
         response.json({
           correcto: 0,
-          mensaje: "Error al crear el token",
+          mensaje: error.message,
         });
       } else {
         response.json({
