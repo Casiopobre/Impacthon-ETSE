@@ -155,42 +155,63 @@ def build_homeP_view(page: ft.Page):
             get_content_layout(),
         ],
     )
-
-
+    
 def build_symptom_menu_view(page: ft.Page):
-    """
-    Construye la vista del menú de síntomas con opciones seleccionables.
-    """
-    page.title = "Menú de Síntomas"
+    def on_sintoma_selected(e):
+        print(f"{e.control.content.controls[1].value} seleccionado")  # Obtiene el texto del botón
+        page.go("/homep")
 
-    symptoms = [
-        "Dolor de cabeza",
-        "Fiebre",
-        "Tos",
-        "Cansancio",
-        "Dolor muscular",
-        "Náuseas",
-        "Vómito",
-        "Diarrea",
-        "Estreñimiento",
-        "Mareos",
-        "Congestión nasal",
-    ]
-
-    symptom_checkboxes = [ft.Checkbox(label=s, value=False) for s in symptoms]
-
-    def return_to_home(e):
-        page.go("/home")
-        page.update()
+    def create_sintoma_button(text, image_path):
+        return ft.Container(
+            content=ft.Column(
+                [
+                    ft.Image(src=f"/{image_path}", width=80, height=80), 
+                    ft.Text(text, size=14, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),  # Texto
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            width=150,  # Tamaño del botón
+            height=150,
+            alignment=ft.alignment.center,
+            bgcolor='#95C1DA',  # Color de fondo
+            border_radius=10,  # Bordes redondeados
+            on_click=on_sintoma_selected,  # Acción cuando se presiona
+            padding=10
+        )
 
     return ft.View(
         route="/sintomas",
         controls=[
-            ft.AppBar(title=ft.Text("Selecciona tus síntomas"), bgcolor=ft.colors.DEEP_ORANGE_800),
-            ft.Column(symptom_checkboxes, spacing=10, padding=20),
-            ft.ElevatedButton("Volver", icon=ft.icons.ARROW_BACK, on_click=return_to_home),
+            ft.AppBar(
+                title=ft.Text("Síntomas"),
+                bgcolor=ft.colors.DEEP_ORANGE_800,
+            ),
+            ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
+            ft.GridView(
+               controls=[
+                    # ft.ElevatedButton("Dolor de cabeza", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Fiebre", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Tos", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Cansancio", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Dolor muscular", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Mareos", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Náuseas", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Vómito", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Diarrea", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Estreñimiento", on_click=on_sintoma_selected),
+                    #     ft.ElevatedButton("Congestión nasal", on_click=on_sintoma_selected),
+                    create_sintoma_button("Mareos", "icono_mareo.svg"),
+                    create_sintoma_button("Más opciones", "icono_opcionMas.svg")
+                        
+                ],
+                max_extent=160,
+                spacing=10,
+                run_spacing=10,
+            )
         ],
     )
+
 
 
 def route_change(page: ft.Page):
