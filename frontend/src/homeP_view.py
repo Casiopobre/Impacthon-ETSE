@@ -43,7 +43,13 @@ def build_homeP_view(page: ft.Page):
         "Menú de Síntomas",
         icon=ft.icons.HEALTH_AND_SAFETY,
         on_click=open_symptom_menu,
-        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.padding.all(15)),
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10), 
+            padding=ft.padding.all(25),
+            text_style=ft.TextStyle(size=24)  # Aumenta el tamaño del texto
+        ),
+        width=500,
+        height=70,
     )
 
     # Contenedor para botones en la parte superior
