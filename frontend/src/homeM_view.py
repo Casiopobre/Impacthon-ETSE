@@ -121,18 +121,20 @@ def build_homeM_view(page: ft.Page):
             Vis
         ],
     )
-    
+
+
+
 def GestionarPacienteObtenido(page, id_paciente):
     """Builds the patient data management view for medical professionals."""
     # Mock patient data - replace with actual API calls
-    patient_data = {
-        "id": id_paciente,
-        "nombre": "Paciente Ejemplo",
-        "edad": 45,
-        "dni": "12345678X",
-        "fecha_nacimiento": "1980-01-15",
-        "num_tlf": "666123456"
-    }
+    
+    nombre = hf.temp_patient_data[id_paciente].get("nombre")
+    fecha_nacimiento = hf.temp_patient_data[id_paciente].get("fecha_nacimiento")
+    dni = hf.temp_patient_data[id_paciente].get("dni")
+    email = hf.temp_patient_data[id_paciente].get("email")
+    num_tlf = hf.temp_patient_data[id_paciente].get("numTlf")
+    edad = hf.calculate_age(fecha_nacimiento)
+     
     
     # Mock medications - replace with actual API calls
     medications = [
@@ -168,14 +170,14 @@ def GestionarPacienteObtenido(page, id_paciente):
         content=ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Text(f"{patient_data['nombre']}", 
+                    ft.Text(f"{nombre}", 
                             weight=ft.FontWeight.BOLD, 
                             size=20),
                     ft.Divider(),
-                    ft.Text(f"DNI: {patient_data['dni']}"),
-                    ft.Text(f"Edad: {patient_data['edad']} años"),
-                    ft.Text(f"Fecha nacimiento: {patient_data['fecha_nacimiento']}"),
-                    ft.Text(f"Teléfono: {patient_data['num_tlf']}"),
+                    ft.Text(f"DNI: {dni}"),
+                    ft.Text(f"Edad: {edad} años"),
+                    ft.Text(f"Fecha nacimiento: {fecha_nacimiento}"),
+                    ft.Text(f"Teléfono: {num_tlf}"),
                     ft.Container(height=20),  # Spacer
                     ft.ElevatedButton(
                         "Modificar datos",
@@ -322,3 +324,203 @@ def GestionarPacienteObtenido(page, id_paciente):
             )
         ]
     )
+
+# def GestionarPacienteObtenido(page, id_paciente):
+    
+#     print("-- - - - -- - - -- - -- ")
+#     print("-- - - - -- - - -- - -- ")
+#     print(id_paciente)
+#     print("-- - - - -- - - -- - -- ")
+#     print("-- - - - -- - - -- - -- ")
+#     """Builds the patient data management view for medical professionals."""
+#     # Patient data - replace with actual API calls
+#     nombre = hf.temp_patient_data[id_paciente].get("nombre")
+#     fecha_nacimiento = hf.temp_patient_data[id_paciente].get("fecha_nacimiento")
+#     dni = hf.temp_patient_data[id_paciente].get("dni")
+#     email = hf.temp_patient_data[id_paciente].get("email")
+#     num_tlf = hf.temp_patient_data[id_paciente].get("numTlf")
+#     edad = hf.calculate_age(fecha_nacimiento)
+     
+#     # Get real medication data from server
+#     medications = hf.get_paciente_recetas(page, id_paciente)
+    
+#     # Function to handle medication deletion
+#     def delete_medication(e, med_id):
+#         # API call would go here
+#         page.snack_bar = ft.SnackBar(ft.Text(f"Eliminando medicamento ID: {med_id}"))
+#         page.snack_bar.open = True
+#         page.update()
+    
+#     # Function to handle adding new medication
+#     def add_medication(e):
+#         page.snack_bar = ft.SnackBar(ft.Text("Función para añadir medicamento"))
+#         page.snack_bar.open = True
+#         page.update()
+    
+#     # Function to handle patient data modification
+#     def modify_patient(e):
+#         page.snack_bar = ft.SnackBar(ft.Text("Modificando datos del paciente"))
+#         page.snack_bar.open = True
+#         page.update()
+    
+#     # Patient profile card
+#     profile_card = ft.Card(
+#         content=ft.Container(
+#             content=ft.Column(
+#                 controls=[
+#                     ft.Text(f"{nombre}", 
+#                             weight=ft.FontWeight.BOLD, 
+#                             size=20),
+#                     ft.Divider(),
+#                     ft.Text(f"DNI: {dni}"),
+#                     ft.Text(f"Edad: {edad} años"),
+#                     ft.Text(f"Fecha nacimiento: {fecha_nacimiento}"),
+#                     ft.Text(f"Teléfono: {num_tlf}"),
+#                     ft.Container(height=20),  # Spacer
+#                     ft.ElevatedButton(
+#                         "Modificar datos",
+#                         icon=ft.icons.EDIT,
+#                         on_click=modify_patient,
+#                         width=200
+#                     )
+#                 ],
+#                 spacing=10,
+#                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
+#             ),
+#             padding=20,
+#             width=300
+#         ),
+#         elevation=4
+#     )
+    
+#     # Calendar placeholder
+#     calendar_placeholder = ft.Container(
+#         content=ft.Column(
+#             controls=[
+#                 ft.Text("Calendario", weight=ft.FontWeight.BOLD, size=16),
+#                 ft.Container(
+#                     content=ft.Text("Calendario de recetas del paciente",
+#                                    text_align=ft.TextAlign.CENTER),
+#                     border=ft.border.all(1, ft.colors.GREY_400),
+#                     border_radius=8,
+#                     padding=20,
+#                     height=200,
+#                     width=300,
+#                     alignment=ft.alignment.center
+#                 )
+#             ],
+#             spacing=10
+#         ),
+#         margin=ft.margin.only(top=20),
+#         width=300
+#     )
+    
+#     # Left column with profile and calendar
+#     left_column = ft.Column(
+#         controls=[
+#             profile_card,
+#             calendar_placeholder
+#         ],
+#         alignment=ft.MainAxisAlignment.START,
+#         horizontal_alignment=ft.CrossAxisAlignment.CENTER
+#     )
+    
+#     # Create medication list items with delete buttons
+#     medication_items = []
+#     if medications:
+#         for med in medications:
+#             medication_items.append(
+#                 ft.Container(
+#                     content=ft.Column([
+#                         ft.Row(
+#                             controls=[
+#                                 ft.Column(
+#                                     controls=[
+#                                         ft.Text(med["nombre"], weight=ft.FontWeight.BOLD),
+#                                         ft.Text(f"Dosificación: {med['dosificacion']}"),
+#                                         ft.Text(f"Intervalo: Cada {med['intervalos_dosificacion']} horas"),
+#                                         ft.Text(f"Fecha fin: {hf.format_date(med['fecha_fin'])}")
+#                                     ],
+#                                     spacing=5,
+#                                     expand=True
+#                                 ),
+#                                 ft.IconButton(
+#                                     icon=ft.icons.DELETE,
+#                                     icon_color=ft.colors.RED_600,
+#                                     tooltip="Eliminar medicación",
+#                                     on_click=lambda e, med_id=med["id"]: delete_medication(e, med_id)
+#                                 )
+#                             ],
+#                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+#                         )
+#                     ]),
+#                     padding=10,
+#                     border=ft.border.all(1, ft.colors.GREY_300),
+#                     border_radius=8,
+#                     margin=ft.margin.only(bottom=10)
+#                 )
+#             )
+    
+#     # Medication container
+#     medication_container = ft.Container(
+#         content=ft.Column(
+#             controls=[
+#                 # Add medication button row
+#                 ft.Row(
+#                     controls=[
+#                         ft.Text("Medicaciones", weight=ft.FontWeight.BOLD, size=18),
+#                         ft.ElevatedButton(
+#                             "Añadir medicación",
+#                             icon=ft.icons.ADD,
+#                             on_click=add_medication
+#                         )
+#                     ],
+#                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+#                 ),
+#                 ft.Divider(),
+#                 # Medication list
+#                 ft.Column(
+#                     controls=medication_items,
+#                     spacing=5,
+#                     scroll=ft.ScrollMode.AUTO
+#                 ) if medication_items else ft.Text("No hay medicaciones registradas")
+#             ],
+#             spacing=10
+#         ),
+#         padding=20,
+#         border=ft.border.all(1, ft.colors.GREY_300),
+#         border_radius=10,
+#         expand=True
+#     )
+#        # Main content
+#     content = ft.Row(
+#         controls=[
+#             left_column,
+#             ft.VerticalDivider(width=1),
+#             medication_container
+#         ],
+#         spacing=20,
+#         expand=True
+#     )
+    
+#     # Return the view
+#     return ft.View(
+#         route=f"/homem/ges/{id_paciente}",
+#         controls=[
+#             ft.AppBar(
+#                 title=ft.Text(f"Gestión de Paciente {id_paciente}"),
+#                 bgcolor=shared.SERGAS_1_HSLA,
+#                 actions=[
+#                     ft.IconButton(
+#                         icon=ft.icons.ARROW_BACK,
+#                         on_click=lambda _: page.go("/homem/ges")
+#                     )
+#                 ]
+#             ),
+#             ft.Container(
+#                 content=content,
+#                 padding=20,
+#                 expand=True
+#             )
+#         ]
+#     )

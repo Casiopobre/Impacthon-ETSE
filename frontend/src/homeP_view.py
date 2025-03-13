@@ -1,5 +1,6 @@
 import flet as ft
 import session_funcs as sf
+import homeP_funcs as hpf
 import shared
 from calendario import Calendario
 
@@ -27,7 +28,7 @@ def build_homeP_view(page: ft.Page):
     
     # Botón para ir al menú de síntomas
     def open_symptom_menu(e):
-        page.go("/sintomas")
+        page.go("/homep/sintomas")
         page.update()
 
     # Botón de sentimifentos
@@ -54,18 +55,15 @@ def build_homeP_view(page: ft.Page):
 
     # Lista de medicamentos
     def get_medication_data():
-        return [
-            {"name": "Paracetamol", "dose": 500, "interval": 8},
-            {"name": "Ibuprofeno", "dose": 400, "interval": 6},
-            {"name": "Omeprazol", "dose": 20, "interval": 24},
-            {"name": "Amoxicilina", "dose": 750, "interval": 12},
-        ]
+        return hpf.get_user_medications(page)
+
 
     def create_medication_card(medication):
         return ft.Card(
             content=ft.Container(
-                content=ft.Row(
-                    [
+                content=ft.Column([
+                    ft.Row(
+                        [
                         ft.Icon(ft.icons.MEDICATION, size=40, color=ft.colors.BLUE_400),
                         ft.Column(
                             [
@@ -74,21 +72,40 @@ def build_homeP_view(page: ft.Page):
                                 ft.Text(f"Intervalo: Cada {medication['interval']} horas"),
                             ],
                             spacing=5,
+                            wrap=True
                         ),
-                    ]
-                ),
+                        ]
+                    ),
+                    ft.Divider(height=10, thickness=1),
+                    ft.Row([
+                        ft.Text(f"Desde: {hpf.format_date(medication.get('start_date', ''))}"),
+                        ft.Text(f"Hasta: {hpf.format_date(medication.get('end_date', ''))}"),
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+                ]),
                 padding=15,
             ),
             margin=ft.margin.only(bottom=10),
         )
 
+
     medication_list = ft.ListView(
         spacing=10, padding=20, expand=True
     )
+    medications = get_medication_data()
     
-    for medication in get_medication_data():
-        medication_list.controls.append(create_medication_card(medication))
-
+    if medications:
+        for medication in medications:
+            medication_list.controls.append(create_medication_card(medication))
+    else:
+        medication_list.controls.append(
+            ft.Container(
+                content=ft.Text("No hay medicamentos para mostrar", 
+                                style=ft.TextStyle(italic=True)),
+                alignment=ft.alignment.center,
+                padding=20
+            )
+        )
+        
     # Container for the calendar 
     calendario = Calendario(page)
 
@@ -104,57 +121,156 @@ def build_homeP_view(page: ft.Page):
         expand=False
     )
 
-    # Main content layout - responsive
+    # Main content layout - separated in 2 rows for better adaptation
     def get_content_layout():
-        # Check if we're on mobile
-        if page.width < 600:
-            # Mobile layout: Calendar under medication list
-            return ft.Column(
+        # First row: Medication list with header
+        medication_row = ft.Container(
+            content=ft.Column(
                 [
-                    ft.Container(
-                        content=ft.Column(
-                            [
-                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
-                                medication_list,
-                            ],
-                        ),
-                        expand=True,
-                    ),
-                    calendar_container,
+                    ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
+                    medication_list,
                 ],
-                expand=True,
-            )
-        else:
-            # Desktop/web layout: Calendar to the right of medication list
-            return ft.Row(
-                [
-                    ft.Container(
-                        content=ft.Column(
-                            [
-                                ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
-                                medication_list,
-                            ],
-                        ),
-                        expand=True,
-                    ),
-                    calendar_container,
-                ],
-                expand=True,
-            )
+                spacing=10,
+            ),
+            padding=ft.padding.all(20),
+            expand=True,
+        )
+
+        # Second row: Calendar container
+        calendar_row = ft.Container(
+            content=calendar_container,
+            padding=ft.padding.all(20),
+            expand=False,
+        )
+
+        # Return as a column with 2 rows
+        return ft.Column(
+            controls=[
+                medication_row,
+                calendar_row,
+            ],
+            expand=True,
+        )
 
     # Update layout when window size changes
     page.on_resize = lambda _: page.update()
+    # Add this function before defining boton_codigo
+    def show_code_dialog(page):
+        # This will hold the text that would be received from server
+        code_text = hpf.get_otp_key(page)
+        
+        # Create placeholder for future QR code implementation
+        qr_placeholder = ft.Container(
+            width=200,
+            height=200,
+            bgcolor=ft.colors.GREY_300,
+            border_radius=10,
+            alignment=ft.alignment.center,
+            content=ft.Column([
+                ft.Icon(ft.icons.QR_CODE, size=100, color=ft.colors.GREY_800),
+                ft.Text("QR Code Placeholder", color=ft.colors.GREY_800)
+            ], alignment=ft.MainAxisAlignment.CENTER)
+        )
+        
+        # Create text display for code
+        code_display = ft.Container(
+            content=ft.Text(
+                code_text,
+                size=24,
+                weight=ft.FontWeight.BOLD,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            margin=ft.margin.only(top=20, bottom=20),
+            alignment=ft.alignment.center,
+        )
+        
+
+
+        # Create the dialog
+        dialog = ft.AlertDialog(
+            title=ft.Row([
+                ft.Text("Mi Código de Acceso", weight=ft.FontWeight.BOLD),
+                ft.IconButton(
+                    icon=ft.icons.CLOSE
+                ),
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            content=ft.Column([
+                qr_placeholder,
+                code_display,
+                ft.Text(
+                    "Este código permite a los profesionales médicos acceder a tu información",
+                    text_align=ft.TextAlign.CENTER,
+                    size=14,
+                    color=ft.colors.GREY_700,
+                ),
+            ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        
+        print("--------")
+        print("--------")
+        print(code_text)
+        print("--------")
+        print("--------")
+        
+        # Show the dialog
+        page.overlay.append(dialog)
+        dialog.open = True
+        page.update()
+    
+       
+    boton_codigo = ft.ElevatedButton(
+        text="Mi Código",
+        icon=ft.icons.QR_CODE,
+        on_click=lambda _: show_code_dialog(page),
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10),
+            color=shared.SERGAS_2_HEX,
+            bgcolor=shared.SERGAS_1_HEX,
+        )
+    )
+    profile_name = "Nombre generico"
+    nav_bar = ft.Row(
+        controls=[
+            boton_codigo,
+            ft.PopupMenuButton(
+                icon=ft.icons.DOUBLE_ARROW,
+                icon_color=shared.SERGAS_5_HEX,
+                tooltip="Cambiar perfil",
+                items = [
+                    ft.PopupMenuItem(text = "Cerrar Sesion"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
+            ),
+            # ft.Spacer(),
+            ft.Text(profile_name, color=shared.SERGAS_5_HEX, size=16),
+            ft.Container(
+                content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=30, color=shared.SERGAS_5_HEX),
+                margin=ft.margin.only(left=10)
+            ),
+        ],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+    )
+
+
+
 
     # Main view
     return ft.View(
-        route="/home",
+        route="/homep",
         controls=[
-            ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor=ft.colors.DEEP_ORANGE_800),
+            ft.AppBar(
+                title=ft.Text("Mi medicaciooooooooooooon"),
+                bgcolor=ft.colors.DEEP_ORANGE_800,
+                actions=[nav_bar],
+                      ),
             ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
             #medication_list,
             get_content_layout(),
         ],
     )
+
 
 
 def build_symptom_menu_view(page: ft.Page):
@@ -184,7 +300,7 @@ def build_symptom_menu_view(page: ft.Page):
         page.update()
 
     return ft.View(
-        route="/sintomas",
+        route="homep/sintomas",
         controls=[
             ft.AppBar(title=ft.Text("Selecciona tus síntomas"), bgcolor=ft.colors.DEEP_ORANGE_800),
             ft.Column(symptom_checkboxes, spacing=10, padding=20),
@@ -201,7 +317,7 @@ def route_change(page: ft.Page):
 
     if page.route == "/home":
         page.views.append(build_homeP_view(page))
-    elif page.route == "/sintomas":
+    elif page.route == "/homep/sintomas":
         page.views.append(build_symptom_menu_view(page))
 
     page.update()

@@ -18,47 +18,22 @@ def login(page: ft.Page, dni, passwd):
         page.update()
         return
 
-    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-    # --- !!!! ---- DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-        dummy_data = {
-        "users": [
-            {
-                "name": "Juan",
-                "dni": "12345678A",
-                "birth_date": "1990-01-01",
-                "phone": "+34123456789",
-                "password": "password123",
-                "otp": "123456",
-                "tipo": "paciente"
-            },
-            {
-                "name": "Maripuri",
-                "dni": "87654321B",
-                "birth_date": "1985-05-15",
-                "phone": "+34987654321",
-                "password": "password456",
-                "otp": "654321",
-                "tipo": "medico"
-            }
-        ]
-    }
 
-    user = next((user for user in dummy_data["users"] if user["dni"] == dni.value and user["password"] == passwd.value), None)
-    if user:
-        page.snack_bar = ft.SnackBar(ft.Text("Inicio de sesión exitoso"))
-        page.controls.append(page.snack_bar)
-        page.snack_bar.open = True
-        page.update()
-        return
-
-    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-    # --- !!!! ---- FIN DATOS DE PRUEBA BORRAR LUEGO ---- !!!! ----
-
-
-    response = requests.post("http://"+ shared.SERVER_IP +":8080/authPWD", data={"dni": dni.value, "passwd": passwd.value}).json()
+    # response_test = requests.post("http://"+ shared.SERVER_IP +":8080/authPWD", json={"dni": dni.value, "passwd": passwd.value})
+    response = requests.post("http://"+ shared.SERVER_IP +":8080/authPWD", json={"dni": dni.value, "passwd": passwd.value}).json()
+    # response = {
+    #     "correcto": 1,
+    #     "tokenLogin": "dummyToken123",
+    #     "id": 1,
+    #     "tipoUsuario": "Paciente"
+    # }
     
+    print("------------------------------------")
+    print(response)
+    print(response)
+    print(response)
+    print("------------------------------------")
+
     if response.get("correcto") == 0:
         # error
         page.snack_bar = ft.SnackBar(ft.Text(response.get("mensaje")))
@@ -67,11 +42,16 @@ def login(page: ft.Page, dni, passwd):
         page.update()
         return
     elif response.get("correcto") == 1:
+        
         token = response.get("tokenLogin")
+        user_id = response.get("id")
+        tipo = response.get("tipoUsuario")
         # Save token to local storage
         page.client_storage.set("sessionToken", token)
+        page.client_storage.set("id", user_id)
+        page.client_storage.set("tipo", tipo)
         # Redireccion a home
-        page.go("/phome")
+        page.go("/homep")
         return 
     else:
         page.snack_bar = ft.SnackBar(ft.Text("Credenciales incorrectas o usuario no encontrado"))
@@ -81,18 +61,28 @@ def login(page: ft.Page, dni, passwd):
 
 def register_user(page: ft.Page, dni_field, name_field, password_field, fecha_nac_field):
     """Procesa el registro de un nuevo paciente."""
-    if not dni_field.value or not name_field.value or not password_field.value or not fecha_nac_field.value:
-        page.snack_bar = ft.SnackBar(ft.Text("Todos los campos son obligatorios"))
-        page.controls.append(page.snack_bar)
-        page.snack_bar.open = True
-        page.update()
-        return
+    
+    # HAY QUE METER ESTA MIERDA EN SESSION VIEW NO AQUI BRO
+    # if not dni_field.value or not name_field.value or not password_field.value or not fecha_nac_field.value:
+    #     page.snack_bar = ft.SnackBar(ft.Text("Todos los campos son obligatorios"))
+    #     page.controls.append(page.snack_bar)
+    #     page.snack_bar.open = True
+    #     page.update()
+    #     return
+    
+    # {
+    # "dni":"dni",
+    # "passwd":"pwd",
+    # "fecha":"17/02/2003",
+    # "nombreCompleto":"Juan juan",
+    # "num_tlf":"677774737"
+    # }
     
     # AJUSTAR !!!!
     response = requests.post("http://"+ shared.SERVER_IP +":8080/createAct", data={
         "dni": dni_field.value,
         "passwd": password_field.value,
-        "nombre": name_field.value,  # Replace with actual value if available
+        "nombreCompleto": name_field.value,  # Replace with actual value if available
         "num_tlf": "123456789"  # Replace with actual value if available
     }).json()
 
