@@ -142,10 +142,10 @@ def build_symptom_menu_view(page: ft.Page):
     def on_sintoma_selected(e):
         if e.control.content.controls[1].value == "Más opciones":
             # Mostrar el cuadro de diálogo para ingresar síntomas y medicamentos
-            open_day_details(page)  # Llamar a open_day_details para mostrar el diálogo
+            open_symtoms_details(page)  # Llamar a open_symtoms_details para mostrar el diálogo
         else:
             print(f"{e.control.content.controls[1].value} seleccionado")
-            page.go("/home")
+            page.go("/homep")
 
     def create_sintoma_button(text, image_path):
         return ft.Container(
@@ -186,7 +186,7 @@ def build_symptom_menu_view(page: ft.Page):
         ],
     )
 
-def open_day_details(page: ft.Page):
+def open_symtoms_details(page: ft.Page):
     # Crear los campos de entrada para los síntomas y medicamentos
     symptoms_input = ft.TextField(label="Síntoma")
 
