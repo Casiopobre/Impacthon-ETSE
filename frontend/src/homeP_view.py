@@ -3,6 +3,7 @@ import session_funcs as sf
 import shared
 from calendario import Calendario
 
+
 def build_homeP_view(page: ft.Page):
     """
     Construye la vista principal del paciente con la lista de medicamentos y espacio para el calendario.
@@ -33,15 +34,16 @@ def build_homeP_view(page: ft.Page):
         controls=[symptoms_button],
         alignment=ft.MainAxisAlignment.CENTER,
     )
-
-    # Lista de medicamentos
     def get_medication_data():
         return [
+            {"name": "Paracetamol", "dose": 500, "interval": 8},
+            {"name": "Paracetamol", "dose": 500, "interval": 8},
             {"name": "Paracetamol", "dose": 500, "interval": 8},
             {"name": "Ibuprofeno", "dose": 400, "interval": 6},
             {"name": "Omeprazol", "dose": 20, "interval": 24},
             {"name": "Amoxicilina", "dose": 750, "interval": 12},
         ]
+    # Lista de medicamentos
 
     def create_medication_card(medication):
         return ft.Card(
@@ -67,23 +69,29 @@ def build_homeP_view(page: ft.Page):
     medication_list = ft.ListView(
         spacing=10, padding=20, expand=True
     )
-    
+    calendario = Calendario(page)
     for medication in get_medication_data():
         medication_list.controls.append(create_medication_card(medication))
-
+    for medication1 in calendario.daily_data.get(calendario.current_date, {}).get("medications", []):
+        medication_list.controls.append(create_medication_card(medication1))
     # Container for the calendar 
-    calendario = Calendario(page)
 
     calendar_container = ft.Container(
         content=(
             ft.Column(
                 [
-                    calendario.navigation_row, calendario.get_calendar_view()
+                    ft.Row(
+                        [
+                            calendario.navigation_row
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER
+                    ),
+                    calendario.get_calendar_view()
             ],
             alignment=ft.MainAxisAlignment.CENTER)
         ),
         padding=20,
-        expand=False
+        expand=False,
     )
 
     # Main content layout - responsive
@@ -99,6 +107,7 @@ def build_homeP_view(page: ft.Page):
                                 ft.Text("Medicamentos de hoy", size=20, weight=ft.FontWeight.BOLD),
                                 medication_list,
                             ],
+                            scroll=ft.ScrollMode.AUTO 
                         ),
                         expand=True,
                     ),
@@ -131,7 +140,7 @@ def build_homeP_view(page: ft.Page):
     return ft.View(
         route="/home",
         controls=[
-            ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor='#95C1DA'),
+            ft.AppBar(title=ft.Text("Mi Medicación"), bgcolor=shared.SERGAS_1_HEX),
             ft.Container(content=buttons_container, padding=ft.padding.only(top=20, bottom=10)),
             #medication_list,
             get_content_layout(),

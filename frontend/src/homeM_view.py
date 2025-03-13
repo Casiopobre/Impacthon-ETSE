@@ -1,6 +1,7 @@
 import flet as ft
 import homeM_funcs as hf
 import shared
+from calendario import Calendario
 
 def GestionarPacienteTab(page):
     codigo_field = ft.TextField(label="Codigo del Paciente", width=280)
@@ -176,7 +177,7 @@ def GestionarPacienteObtenido(page, id_paciente):
                     ft.Text(f"Edad: {patient_data['edad']} años"),
                     ft.Text(f"Fecha nacimiento: {patient_data['fecha_nacimiento']}"),
                     ft.Text(f"Teléfono: {patient_data['num_tlf']}"),
-                    ft.Container(height=20),  # Spacer
+                    ft.Container(height=5),  # Spacer
                     ft.ElevatedButton(
                         "Modificar datos",
                         icon=ft.icons.EDIT,
@@ -184,35 +185,56 @@ def GestionarPacienteObtenido(page, id_paciente):
                         width=200
                     )
                 ],
-                spacing=10,
+                spacing=5,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
             ),
-            padding=20,
+            padding=5,
             width=300
         ),
         elevation=4
     )
     
     # Calendar placeholder
+    calendario = Calendario(page)
+
+    calendar_container = ft.Container(
+        content=(
+            ft.Column(
+                [
+                    ft.Row(
+                        [
+                            calendario.navigation_row
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+                        
+                    ),
+                    calendario.get_calendar_view()
+            ],
+            alignment=ft.MainAxisAlignment.CENTER)
+        ),
+        padding=20,
+        expand=False,
+        width=400
+    )
     calendar_placeholder = ft.Container(
         content=ft.Column(
             controls=[
-                ft.Text("Calendario", weight=ft.FontWeight.BOLD, size=16),
+                calendar_container,
                 ft.Container(
                     content=ft.Text("Calendario de recetas del paciente",
                                    text_align=ft.TextAlign.CENTER),
                     border=ft.border.all(1, ft.colors.GREY_400),
                     border_radius=8,
-                    padding=20,
-                    height=200,
-                    width=300,
+                    padding=10,
+                    height=190,
+                    width=400,
                     alignment=ft.alignment.center
                 )
             ],
-            spacing=10
+            spacing=5
         ),
         margin=ft.margin.only(top=20),
-        width=300
+        width=400
     )
     
     # Left column with profile and calendar
@@ -282,11 +304,12 @@ def GestionarPacienteObtenido(page, id_paciente):
                     scroll=ft.ScrollMode.AUTO
                 ) if medication_items else ft.Text("No hay medicaciones registradas")
             ],
-            spacing=10
+            spacing=10,
+            scroll=ft.ScrollMode.AUTO
         ),
         padding=20,
         border=ft.border.all(1, ft.colors.GREY_300),
-        border_radius=10,
+        border_radius=5,
         expand=True
     )
     
