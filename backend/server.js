@@ -371,7 +371,7 @@ function getDatosUsuario(request,response){
           mensaje: error.message,
         });
       } else {
-        console.log(results[0].tipo))
+        console.log(results[0].tipo)
         if (results > 0 && (results[0].tipo="medico")) {
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
