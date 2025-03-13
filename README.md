@@ -1,8 +1,7 @@
 # CuidaMed
 Proyecto desarrollado durante **[IMPACT-THON USC](https://pasoinfousc.com/hackathon.html)**
 
-**CuidaMed** es un sistema de **seguimiento de medicación** diseñado para ayudar al usuario a gestionar su toma de medicamentos y a mantener un [**?seguimiento?**] de sus síntomas. 
-Presenta una interfaz sencilla con el objetivo de llegar al mayor público posible y resultar poco confuso para personas mayores.
+**CuidaMed** es un sistema de **seguimiento de medicación** diseñado para ayudar al usuario a gestionar su toma de medicamentos y realizar un seguimiento de los síntomas. SU interfaz sencilla está diseñada para ser accesible a un amplio público, incluyendo personas mayores, reduciendo la confusión y facilitando su uso. El sistema busca mejorar la adherencia a los tratamientos y brindar un mejor control sobre la evolución de la salud del paciente
 
 ## Funcionalidades
 + Soporte tanto para **web** como para **android**
