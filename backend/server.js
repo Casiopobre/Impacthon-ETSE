@@ -542,7 +542,7 @@ function getRecetas(request, response) {
                   mensaje: error.message,
                 });
               }
-        
+              console.log(results)
               if (results.length === 0) {
                 return response.json({
                   correcto: 0,
