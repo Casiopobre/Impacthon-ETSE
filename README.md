@@ -13,9 +13,14 @@ Proyecto desarrollado durante **[IMPACT-THON USC](https://pasoinfousc.com/hackat
 !CAPTURA DE PANTALLA DE LA WEB!
 
 ## Como funciona?
-La aplicación está desarrollada en el framework de cliente flet, para permitirnos exportarlo a diferentes plataformas. \
-La aplicación se conecta a nuestra API desarrollada en NodeJS que se conecta a la base de datos MySQL. \
-Para la base de datos utilizamos la CIMA REST API de la AEMPS para obtener la información sobre los medicamentos.
+La aplicación está desarrollada en el framework de cliente Flet, lo que permite exportarla a diferentes plataformas como web, Android y Windows.
+### Arquitectura del sistema
+1. **Interfaz de usuario**: La interfaz está diseñada con Flet para proporcionar una experiencia intuitiva y accesible en múltiples dispositivos.
+2. **API backend**: La aplicación se conecta a una API desarrollada en NodeJS que gestiona la lógica de negocio y la comunicacion con la base de datos.
+3. **Base de datos**: Se utiliza MySQL para almacenar los datos de los usuarios, sus medicamentos, síntomas y registros médicos.
+4. **Consulta de medicamentos**: La aplicación emplea la CIMA REST API de la AEMPS para obtener información actualizada sobre los medicamentos disponibles en España.
+5. **Autenticación y seguridad**: Se implementa autenticación segura para proteger los datos de los usuarios, con encriptación y permisos diferenciados entre pacientes y profesionales sanitarios.
+6. **Notificaciones y recordatorios**: El sistema envía notificaciones a los usuarios para recordarles la toma de medicamentos y el registro de síntomas diarios.
 
 ## Instalación
 Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5.
@@ -35,7 +40,7 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
       >Nota: es imprescindible tener la app de Flet y que el ordenador esté conectado a la misma red que el teléfono.
 
 ## Instrucciones de uso
-###¿Cómo se usa la app?
+### ¿Cómo se usa la app?
 1. **Registro e inicio de sesión**
    + Los pacientes crean una cuenta y configuran su perfil de salud.
    + Los profesionales sanitarios puede registrarse y vincularse a pacientes para hacer seguimiento.
@@ -48,8 +53,14 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
 4. **Interacción con el calendario**
    Se pueden visualizar las fechas de toma de medicamentos y el historial de síntomas en un calendario interactivo.
 5. **Acceso de profesionales sanitarios**
-   Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas.
-
+   Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas. Además, basándose en los datos recopilados, la aplicacion puede generar reportes y gráficos para facilitar la toma de decisiones médicas.
+   
 ## Licencias
-Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_) 
++ Código fuete: Este software está licenciado bajo una licencia de código abierto, permitiendo su uso, modificación y distribución bajo ciertas condiciones.
++ Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_)
++ Datos de medicamentos: La información sobre medicamentos se obtiene a través de la CIMA REST API de la AEMPS, cuyos datos están sujetos a los términos y condiciones establecidos por la Agencia Española de Medicamentos y Productos Sanitarios.
++ Bibiotecas y frameworks: Se utilizan diversas tecnologías de terceros, cada una con sus propias licencias. Entre ellas:
+     + FLET
+     + NodeJS (licencia MIT)
+     + MySQL (licencia GPL)
 
