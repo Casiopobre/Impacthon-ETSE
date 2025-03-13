@@ -468,9 +468,8 @@ function getTipoUsuario(request,response){
           mensaje: error.message,
         });
       }
-
-      if (results.length >= 0) {
-        
+      if (results.length > 0) {
+          console.log(results[0].tipo)
           return response.json({
             correcto: 1,
             tipoUsuario: results[0].tipo
