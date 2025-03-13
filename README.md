@@ -15,6 +15,7 @@ Presenta una interfaz sencilla con el objetivo de llegar al mayor público posib
 
 ## Como funciona?
 EZEQUIEL EXPLICA
+Para la base de datos utilizamos la CIMA REST API de la AEMPS para obtener la información sobre los medicamentos.
 
 ## Despliegue
 > Instrucciones para que cualquier usuario pueda runear la app
@@ -23,5 +24,6 @@ EZEQUIEL EXPLICA
 > Como se usa la app
 
 ## Licencias
-SALVIA METE LAS LICENCIAS
+Iconos de síntomas: SeungJun for TheNounProject (Creative Commons Attribution License (CC BY 3.0))
+--CIMA REST API (Public Domain)--
 
