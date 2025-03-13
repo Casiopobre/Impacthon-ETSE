@@ -145,7 +145,7 @@ def build_symptom_menu_view(page: ft.Page):
             open_day_details(page)  # Llamar a open_day_details para mostrar el diálogo
         else:
             print(f"{e.control.content.controls[1].value} seleccionado")
-            page.go("/home")
+            page.go("/homep")
 
     def create_sintoma_button(text, image_path):
         return ft.Container(
