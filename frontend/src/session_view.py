@@ -3,8 +3,9 @@ import session_funcs as sf
 import shared
 
 def NormalLogin(page):
-        dni_field = ft.TextField(label="DNI", width=280)
-        password_field = ft.TextField(label="Contraseña", password=True, width=280)
+        colorines = ft.TextStyle(color=ft.Colors.WHITE)
+        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
         
         otp_button = ft.ElevatedButton(
             text="Inicio de sesión con código de un solo uso",
@@ -15,13 +16,6 @@ def NormalLogin(page):
             text="Iniciar sesión",
             on_click=lambda _: sf.login(page, dni_field, password_field)
         )
-<<<<<<< HEAD
-        register_button = ft.ElevatedButton(
-             text="Registrarse",
-             on_click=lambda e: page.go("/session/register")
-        )
-        print("\n\n\n\n\n Hola \n\n\n\n\n")
-=======
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
@@ -29,87 +23,102 @@ def NormalLogin(page):
         )
 
         print("\n\n estás en login \n\n")
->>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
 
-        return ft.Column(
-            [
-                ft.Row([
-<<<<<<< HEAD
-                        register_button
-                    ],
-                    alignment=ft.MainAxisAlignment.END),
-                dni_field,
-                password_field,
-                login_button,
-                otp_button
-=======
-                    login_button,
-                    register_button
-                ]),
-                ft.Row([
+        return ft.Row([
+            ft.Container(
+                ft.Column(controls=[
                     dni_field,
                     password_field,
-
-                ]),
-                ft.Row([                    
                     login_button,
-                    otp_button
-                ]),
->>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
+                    otp_button,
+                    register_button
+                    ],
+                    spacing=10,
+                    alignment = ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER    
+                ),
+                gradient= ft.LinearGradient([shared.SERGAS_1_HEX, 'blue']),     
+                width=380,
+                height =460,
+                border_radius=20,
+                margin=5
+            )
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+            alignment = ft.MainAxisAlignment.CENTER,
         )
+        
 
 
 def OptLogin(page):
-        dni_field = ft.TextField(label="DNI", width=280)
-        otp_field = ft.TextField(label="Código de un solo uso", width=280)
+        colorines = ft.TextStyle(color=ft.Colors.WHITE)
+        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        otp_field = ft.TextField(label="Código de un solo uso", width=280,label_style=colorines, border_color=ft.Colors.WHITE)
 
         login_button = ft.ElevatedButton(
             text="Iniciar sesión con OTP",
             on_click=lambda e : sf.otplogin(page, dni_field, otp_field)
         )
 
-        return ft.Column(
-            [
-                dni_field,
-                otp_field,
-                login_button,
+        return ft.Row([
+            ft.Container(
+                ft.Column(
+                    [
+                        dni_field,
+                        otp_field,
+                        login_button,
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=20
+                ),
+                gradient= ft.LinearGradient([shared.SERGAS_1_HEX, 'blue']),
+                width=380,
+                height =460,
+                border_radius=20,
+                margin=5
+            )
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+            alignment = ft.MainAxisAlignment.CENTER,
         )
 
 
 def Register(page):
-        name_field = ft.TextField(label="Nombre completo", width=280)
-        dni_field = ft.TextField(label="DNI", width=280)
-        birth_field = ft.TextField(label="Fecha nacimiento", width=280)
-        phone_field = ft.TextField(label="Número teléfono", width=280)
-        password_field = ft.TextField(label="Contraseña", password=True, width=280)
-        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280)
+        colorines = ft.TextStyle(color=ft.Colors.WHITE)
+        name_field = ft.TextField(label="Nombre completo", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        birth_field = ft.TextField(label="Fecha nacimiento", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        phone_field = ft.TextField(label="Número teléfono", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
             on_click=lambda e: sf.register_user(page, dni_field, name_field, password_field, birth_field)
         )
-
-        return ft.Column(
-            [
-                name_field,
-                dni_field,
-                birth_field,
-                phone_field,
-                password_field,
-                confirm_password_field,
-                register_button,
+        return ft.Row([
+            ft.Container(
+                ft.Column(
+                    [
+                        name_field,
+                        dni_field,
+                        birth_field,
+                        phone_field,
+                        password_field,
+                        confirm_password_field,
+                        register_button,
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=20
+                ),
+                gradient= ft.LinearGradient([shared.SERGAS_1_HEX, 'blue']),
+                width=380,
+                height =500,
+                border_radius=20,
+                margin=5
+            )
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+            alignment = ft.MainAxisAlignment.CENTER,
         )
 
 
@@ -127,7 +136,6 @@ def build_view(page: ft.Page):
     #   - Estamos cooked
     # --#-- !!! --#--
     selected_index = 0
-        
     components = []
     route_returned="/"
     if page.route == "/session/login":
@@ -144,7 +152,7 @@ def build_view(page: ft.Page):
     content_container = ft.Container(
         content=components,
         alignment=ft.alignment.center,
-        bgcolor=ft.colors.WHITE,
+        bgcolor=None,
         padding=20,
         border_radius=10,
         shadow=ft.BoxShadow(blur_radius=10, spread_radius=2, color=ft.colors.BLACK12),
@@ -155,6 +163,7 @@ def build_view(page: ft.Page):
     # Create the top-level view
     return ft.View(
         route=route_returned,
+        bgcolor=ft.colors.GREY,
         controls=[
             # Optionally an AppBar:
             ft.AppBar(
