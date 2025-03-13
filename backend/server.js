@@ -122,7 +122,7 @@ function autorizacionToken(request, response) {
   let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
     conexion.query(
-      "SELECT * FROM CodigoQR WHERE token = ? ",
+      "SELECT * FROM codigoQR WHERE token = ? ",
       [tokenLogin],
       async function (error, results, fields) {
         if (error) {
@@ -170,7 +170,7 @@ function getIdToken(request, response) {
   let tokenLogin = request.body.tokenLogin;
   if (tokenLogin) {
     conexion.query(
-      "SELECT * FROM CodigoQR WHERE token = ? ",
+      "SELECT * FROM codigoQR WHERE token = ? ",
       [tokenLogin],
       async function (error, results, fields) {
         if (error) {
@@ -307,7 +307,7 @@ async function crearCuentaMedico(request, response) {
                             id = results[0].id;
                             token = maketoken(10);
                             conexion.query(
-                              "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+                              "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
                               [token, id, "login"],
                               async function (error) {
                                 if (error) {
@@ -457,7 +457,7 @@ function crearTokenEditar(request, response){
   }
   token = maketoken(10);
   conexion.query(
-    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+    "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
     [token, id, "editar"],
     async function (error) {
       if (error) {
@@ -485,7 +485,7 @@ function crearTokenEditar(request, response){
   }
   token = maketoken(10);
   conexion.query(
-    "INSERT into CodigoQR (token,paciente,uso) values(?,?,?)",
+    "INSERT into codigoQR (token,paciente,uso) values(?,?,?)",
     [token, id, "editar"],
     async function (error) {
       if (error) {
