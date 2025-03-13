@@ -167,8 +167,8 @@ function autorizacionToken(request, response) {
 
 
 function getIdToken(request, response) {
-  let tokenLogin = request.body.tokenLogin;
-  if (tokenLogin) {
+  let token = request.body.token;
+  if (token) {
     conexion.query(
       "SELECT * FROM codigoQR WHERE token = ? ",
       [tokenLogin],
@@ -195,12 +195,9 @@ function getIdToken(request, response) {
                 } else {
                   if (results.length > 0) {
                     id = results[0].id;
-                    let tokenLogin = generateAccessToken(id);
                     response.json({
                       correcto: 1,
-                      tokenLogin: tokenLogin,
                       id: results[0].id,
-                      tipoUsuario: results[0].tipo,
                     });
                   }
                 }
