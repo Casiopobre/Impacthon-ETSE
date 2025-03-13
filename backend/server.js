@@ -385,6 +385,7 @@ function getDatosUsuario(request,response){
                   mensaje: "Error",
                 });
               } else {
+                console.log("Paciente comprobando sus datos")
                 console.log(results > 0)
                 if (results > 0) {
                   response.json({
