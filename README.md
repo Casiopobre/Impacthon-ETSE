@@ -39,15 +39,15 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
 1. **Registro e inicio de sesión**
    + Los pacientes crean una cuenta y configuran su perfil de salud.
    + Los profesionales sanitarios puede registrarse y vincularse a pacientes para hacer seguimiento.
-2.**Gestión de medicamentos**
+2. **Gestión de medicamentos**
     + Los usuarios ingresan los medicamentos que están tomando y establecen horarios.
     + La app envía recordatorios cuando es el momento de tomar un medicamento.
 3. **Seguimiento de síntomas**
    + Los pacientes pueden registrar síntomas y cambios en su salud.
    + La información se almacena para su consulta posterior y para ser analizada por médicos.
-4.**Interacción con el calendario**
+4. **Interacción con el calendario**
    Se pueden visualizar las fechas de toma de medicamentos y el historial de síntomas en un calendario interactivo.
-5.**Acceso de profesionales sanitarios**
+5. **Acceso de profesionales sanitarios**
    Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas.
 
 ## Licencias
