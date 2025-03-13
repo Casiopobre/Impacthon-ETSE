@@ -458,7 +458,7 @@ function getTipoUsuario(request,response){
   }
 
   conexion.query(
-    "SELECT * FROM Receta WHERE id_paciente = ?",
+    "SELECT * FROM Usuario WHERE id = ?",
     [id],
     async function (error, results, fields) {
       if (error) {
