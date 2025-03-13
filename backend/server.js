@@ -373,6 +373,7 @@ function getDatosUsuario(request,response){
       } else {
         console.log(results[0].tipo)
         if (results > 0 && (results[0].tipo="medico")) {
+          console.log("Medico buscando a paciente")
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
             [idPaciente],
