@@ -1,14 +1,14 @@
 # CuidaMed
 Proyecto desarrollado durante **[IMPACT-THON USC](https://pasoinfousc.com/hackathon.html)**
 
-**CuidaMed** es un sistema de **seguimiento de medicación** diseñado para ayudar al usuario a gestionar su toma de medicamentos y realizar un seguimiento de los síntomas. SU interfaz sencilla está diseñada para ser accesible a un amplio público, incluyendo personas mayores, reduciendo la confusión y facilitando su uso. El sistema busca mejorar la adherencia a los tratamientos y brindar un mejor control sobre la evolución de la salud del paciente
+**CuidaMed** es un sistema de **seguimiento de medicación** diseñado para ayudar al usuario a gestionar su toma de medicamentos y realizar un seguimiento de los síntomas. SU interfaz sencilla está diseñada para ser accesible a un amplio público, incluyendo personas mayores, reduciendo la confusión y facilitando su uso. El sistema busca mejorar la adherencia a los tratamientos y brindar un mejor control sobre la evolución de la salud del paciente.
 
 ## Funcionalidades
-+ Soporte tanto para **web** como para **android**
-+ Sistema de **inicio de sesión** diferenciado para profesionales sanitarios y para pacientes
-+ Sistema diario de **seguimiento de síntomas**
-+ **Calendario** de medicamentos y síntomas
-+ Lista de **medicamentos** previstos para hoy
++ **Compatibilidad multiplataforma**: Disponible tanto en versión web como en Android.
++ **Inicio de sesión diferenciado**: Existen dos tipos de cuentas, una para pacientes y otra para profesionales sanitarios, permitiendo así un acceso adecuado a las funciones según el rol del usuario.
++ **Seguimiento diario de síntomas**: Los usuarios pueden registrar sus síntomas y cambios en su estado de salud de manera diaria para un mejor control médico.
++ **Calendario de medicamentos y síntomas**: Un sistema de calendario donde se visualizan las fechas y horas de toma de medicamentos, así como los registros de los síntomas.
++ **Lista de medicamentos previstos para hoy**: Una lista que muestra los medicamentos programados para el día actual, ayudando a los usuarios a no olvidar ningúna dosis.
 
 !CAPTURA DE PANTALLA DE LA WEB!
 
@@ -23,16 +23,32 @@ Para poder utilizar la aplicación necesitas un entorno con Python 3.12.3 o supe
 2. En en directorio "frontend" ejecuta el comando `flet run --web` para la versión web y `flet run --android` para Android.
    > Nota: para Android es necesario tener instalada la app de Flet y que el ordenador esté conectado a la misma red que el teléfono
 
+## Despliegue
+### Instrucciones para ejecutar la app
+Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos pasos:
+1. **Clonar el repositorio** del proyecto desde la plataforma correspondiente (GitHub, GitLab, etc.).
+2. **Instalar las dependencias necesarias** con el comando correspondiente según el sistema (ej, `npm install` para Node.js o `pip install -r requirements.txt` para Python).
+3. **Configurar el entorno**. Necesitas un entorno con Python 3.12.3 o superior y [Flet](https://flet.dev/) 0.27.5.
+4. **Ejecutar la aplicación** con los comandos especificos según la plataforma:
+   -Para web: `npm start` o `python app.py`
+   -Para Android: Compilar la app con Android Studio y desplegar en un dispositivo o emulador.
+      >Nota: es imprescindible tener la app de Flet y que el ordenador esté conectado a la misma red que el teléfono.
+
 ## Instrucciones de uso
-
-### Paciente
-Primero inicia sesión o regístrate en la pantalla de login como paciente. \
-Para añadir un medicamento, presiona el día en el que lo quieres añadir en el calendario y completa los campos. \
-Para añadir un síntoma pulsa el botón superior ("¿Cómo te sientes hoy?") y añade un síntoma predefinido o dale al botón "+" para añadir un nuevo síntoma. 
-
-### Personal sanitario
-Primero inicia sesión como presonal sanitario. \
-. . . . . . . . . . . . FAÑLTASN 
+###¿Cómo se usa la app?
+1. **Registro e inicio de sesión**
+   + Los pacientes crean una cuenta y configuran su perfil de salud.
+   + Los profesionales sanitarios puede registrarse y vincularse a pacientes para hacer seguimiento.
+2.**Gestión de medicamentos**
+    + Los usuarios ingresan los medicamentos que están tomando y establecen horarios.
+    + La app envía recordatorios cuando es el momento de tomar un medicamento.
+3. **Seguimiento de síntomas**
+   + Los pacientes pueden registrar síntomas y cambios en su salud.
+   + La información se almacena para su consulta posterior y para ser analizada por médicos.
+4.**Interacción con el calendario**
+   Se pueden visualizar las fechas de toma de medicamentos y el historial de síntomas en un calendario interactivo.
+5.**Acceso de profesionales sanitarios**
+   Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas.
 
 ## Licencias
 Iconos de síntomas: SeungJun for TheNounProject (_Creative Commons Attribution License (CC BY 3.0)_) 
