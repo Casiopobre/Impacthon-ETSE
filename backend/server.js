@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const maketoken = require("./functions.js");
 const generateAccessToken = require("./generarTokenAuth.js");
 const mysql = require("mysql");
+const jwt = require("jsonwebtoken")
 require("dotenv").config();
 
 //Variables generales
@@ -16,9 +17,9 @@ var port = process.env.PORT || 8080;
 app.use(express.json());
 
 //Conexion base de datos
-conexion = mysql.createPool({
+conexion = mysql.createConnection({
   host: process.env.HOST,
-  user: process.env.USER,
+  user: 'root',
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   port: 3306,
@@ -32,19 +33,22 @@ conexion = mysql.createPool({
 });
 
 function checkTokenJWT(token, id) {
+    returnValue=0
   if (token) {
+   
     jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET,
       function (err, token_data) {
         if (err || token_data != id) {
-          return 1;
+          returnValue=1;
         } else {
-          return 0;
+        returnValue=0;
         }
       }
     );
   }
+  return returnValue
 }
 
 //-------------  RUTAS  -------------
@@ -65,6 +69,7 @@ app.post("/insertarSintomas", insertarSintomas);
 
 //Funciones post
 function autorizacionPWD(request, response) {
+  console.log("PersonaLogeada")
   dni = request.body.dni;
   passwd = request.body.passwd;
   if (dni && passwd) {
@@ -82,7 +87,13 @@ function autorizacionPWD(request, response) {
           if (results.length > 0) {
             id = results[0].id;
             if (await bcrypt.compare(passwd, results[0].passwd)) {
-              let tokenLogin = generateAccessToken(id);
+              let tokenLogin = generateAccessToken(id); 
+              console.log({
+                correcto: 1,
+                tokenLogin: tokenLogin,
+                id: results[0].id,
+                tipoUsuario: results[0].tipoUsuario,
+              })
               response.json({
                 correcto: 1,
                 tokenLogin: tokenLogin,
@@ -94,13 +105,12 @@ function autorizacionPWD(request, response) {
         }
       }
     );
-
-    jsonRespuesta = {
-      usuario: dni,
-      contraseña: passwd,
-      token: makeid(8),
-    };
-    response.json(jsonRespuesta);
+  }else{
+  response.json({
+            correcto: 0,
+            mensaje: "Faltan campos",
+          });
+    
   }
 }
 
@@ -164,7 +174,7 @@ async function crearCuenta(request, response) {
 
   if (dni && passwd && fecha && nombreCompleto && num_tlf) {
     conexion.query(
-      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+      "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
       [dni, fecha, nombreCompleto, encryptedPasswd, num_tlf, "paciente"],
       async function (error) {
         if (error) {
@@ -175,8 +185,7 @@ async function crearCuenta(request, response) {
         } else {
           response.json({
             correcto: 1,
-            mensaje: "Cuenta creada",
-            token: token,
+            mensaje: "Cuenta creada"
           });
         }
       }
@@ -214,7 +223,7 @@ async function crearCuentaMedico(request, response) {
 
             if (dni && passwd && edad && nombreCompleto && num_tlf) {
               conexion.query(
-                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?,?,?)",
+                "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
                 [
                   dni,
                   fecha,
@@ -296,70 +305,74 @@ async function crearCuentaMedico(request, response) {
 function getRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
-  if (tokenLogin) {
-    if (checkTokenJWT(tokenLogin, id)) {
-      conexion.query(
-        "SELECT * FROM Receta WHERE id_paciente = ? ",
-        [id],
-        async function (error, results, fields) {
-          if (error) {
-            console.log(error);
-            response.json({
-              correcto: 0,
-              mensaje: error.message,
-            });
-          } else {
-            if (results.length > 0) {
-              let recetas;
-              for (const recetaNum in results) {
-                conexion.query(
-                  "SELECT nombre FROM Medicamento WHERE id = ? ",
-                  [recetaNum.id],
-                  async function (error, resultsMed, fields) {
-                    if (error) {
-                    } else {
-                      recetas[recetaNum] = {
-                        nombre: resultsMed[0],
-                        fechaEmision: results[recetaNum].fecha_emision,
-                        fechaFin: results[recetaNum].fecha_fin,
-                        dosificacion: results[recetaNum].dosificacion,
-                        intervalosDosificacion:
-                          results[recetaNum].intervalos_dosificacion,
-                      };
-                      jsonRespuesta = {
-                        correcto: 1,
-                        recetas: recetas,
-                      };
-                      response.json(jsonRespuesta);
-                    }
-                  }
-                );
-              }
-            }
-            response.json({
-              correcto: 0,
-              mensaje: "Este paciente no tiene recetas",
-            });
-          }
-        }
-      );
-    } else {
-      response.json({
-        correcto: 0,
-      });
-    }
-  }else{
-    response.json({
-      correcto: 0,
-    });
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
   }
+
+  conexion.query(
+    "SELECT * FROM Receta WHERE id_paciente = ?",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      }
+
+      if (results.length === 0) {
+        return response.json({
+          correcto: 0,
+          mensaje: "Este paciente no tiene recetas",
+        });
+      }
+
+      try {
+        const recetas = await Promise.all(results.map(async (receta) => {
+          const [medicamento] = await new Promise((resolve, reject) => {
+            conexion.query(
+              "SELECT nombre FROM Medicamento WHERE id = ?",
+              [receta.id_medicamento],
+              (error, resultsMed) => {
+                if (error) reject(error);
+                else resolve(resultsMed);
+              }
+            );
+          });
+
+          return {
+            nombre: medicamento ? medicamento.nombre : 'Desconocido',
+            fechaEmision: receta.fecha_emision,
+            fechaFin: receta.fecha_fin,
+            dosificacion: receta.dosificacion,
+            intervalosDosificacion: receta.intervalos_dosificacion,
+          };
+        }));
+
+        response.json({
+          correcto: 1,
+          recetas: recetas,
+        });
+      } catch (err) {
+        console.error(err);
+        response.json({
+          correcto: 0,
+          mensaje: "Error al procesar las recetas",
+        });
+      }
+    }
+  );
 }
+
 
 function insertarRecetas(request, response) {
   let tokenLogin = request.body.tokenLogin;
   let id = request.body.id;
   if (tokenLogin) {
-    if(checkTokenJWT(tokenLogin,id)){
+    console.log(checkTokenJWT(tokenLogin,id))
+    if(checkTokenJWT(tokenLogin,id)==1){
       arrayRecetas = request.body.recetas;
       for (const numReceta in arrayRecetas) {
         receta = arrayRecetas[numReceta];
@@ -390,6 +403,7 @@ function insertarRecetas(request, response) {
     }else{
       response.json({
         correcto: 0,
+        mensaje:"No va"
       });
     }
   }
@@ -406,6 +420,7 @@ function insertarSintomas(request, response) {
   let sintomas = request.body.sintomas;
   if (tokenLogin) {
     if(checkTokenJWT(tokenLogin,id)){
+      console.log("Enter")
       conexion.query(
         "INSERT into Sintomatologia (id_paciente,fecha,sintomas) values(?,?,?)",
         [

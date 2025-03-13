@@ -27,7 +27,7 @@ def GestionarPacienteTab(page):
     )
 
 def AnadirPacienteTab(page):
-    name_field = ft.TextField(label="Nombre completo", width=280)
+    name_field = ft.TextField(label="Nombre Completo", width=280)
     dni_field = ft.TextField(label="DNI", width=280)
     birth_field = ft.TextField(label="Fecha nacimiento", width=280)
     phone_field = ft.TextField(label="Número teléfono", width=280)
@@ -39,19 +39,23 @@ def AnadirPacienteTab(page):
         on_click=lambda e: hf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
     )
 
-    return ft.Column(
-        [
-            name_field,
-            dni_field,
-            birth_field,
-            phone_field,
-            password_field,
-            password_confirmation_field,
-            register_button,
+    return ft.Row (
+        [ft.Column(
+            [
+                name_field,
+                dni_field,
+                birth_field,
+                phone_field,
+                password_field,
+                password_confirmation_field,
+                register_button,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20
+            )
         ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20
+        alignment=ft.MainAxisAlignment.CENTER
     )
 
 def build_homeM_view(page: ft.Page):
@@ -74,18 +78,22 @@ def build_homeM_view(page: ft.Page):
     def AnadirClick(e):
         page.go("/homem/an")
 
-
-    boton_ges = ft.TextButton(text="Gestionar Paciente",on_click= GestionClick)
-    boton_an = ft.TextButton(text="Añadir Pacientes", on_click= AnadirClick)
+    estilo = ft.ButtonStyle(color=ft.colors.WHITE)
+    boton_ges = ft.TextButton(text="Gestionar Paciente",style=estilo,on_click= GestionClick)
+    boton_an = ft.TextButton(text="Añadir Pacientes",style=estilo, on_click= AnadirClick)
     nav_bar = ft.Row(
         controls=[
             boton_ges,
             boton_an,
-            ft.IconButton(
+            ft.PopupMenuButton(
                 icon=ft.icons.DOUBLE_ARROW,
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
+                items = [
+                    ft.PopupMenuItem(text = "Cerrar Sesion"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
             ),
             # ft.Spacer(),
             ft.Text(profile_name, color=ft.colors.WHITE, size=16),
@@ -107,7 +115,7 @@ def build_homeM_view(page: ft.Page):
             # AppBar with navigation
             ft.AppBar(
                 title=ft.Text("Home Page"),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
+                bgcolor=shared.SERGAS_1_HEX,
                 actions=[nav_bar],
             ),
             Vis
