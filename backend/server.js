@@ -371,6 +371,7 @@ function getDatosUsuario(request,response){
           mensaje: error.message,
         });
       } else {
+        console.log(results[0].tipo))
         if (results > 0 && (results[0].tipo="medico")) {
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
@@ -383,6 +384,7 @@ function getDatosUsuario(request,response){
                   mensaje: "Error",
                 });
               } else {
+                console.log(results)
                 if (results > 0) {
                   response.json({
                     correcto: 1,
@@ -416,6 +418,7 @@ function getDatosUsuario(request,response){
                   mensaje: error.message,
                 });
               } else {
+                console.log(results)
                 if (results > 0) {
                   response.json({
                     correcto: 1,
