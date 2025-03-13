@@ -67,6 +67,7 @@ app.post("/createActMedico", crearCuentaMedico);
 app.post("/createAct", crearCuenta);
 app.post("/insertarRecetas", insertarRecetas);
 app.post("/insertarSintomas", insertarSintomas);
+app.post("/getSintomas", getSintomas);
 
 //-------------  FUNCIONES  -------------
 //Funciones get
@@ -167,8 +168,8 @@ function autorizacionToken(request, response) {
 
 
 function getIdToken(request, response) {
-  let tokenLogin = request.body.tokenLogin;
-  if (tokenLogin) {
+  let token = request.body.token;
+  if (token) {
     conexion.query(
       "SELECT * FROM codigoQR WHERE token = ? ",
       [tokenLogin],
@@ -195,12 +196,9 @@ function getIdToken(request, response) {
                 } else {
                   if (results.length > 0) {
                     id = results[0].id;
-                    let tokenLogin = generateAccessToken(id);
                     response.json({
                       correcto: 1,
-                      tokenLogin: tokenLogin,
                       id: results[0].id,
-                      tipoUsuario: results[0].tipo,
                     });
                   }
                 }
@@ -265,7 +263,7 @@ async function crearCuentaMedico(request, response) {
             mensaje: error.message,
           });
         } else {
-          if (results > 0 && (results[0].tipo="medico")) {
+          if (results.length > 0 && (results[0].tipo="medico")) {
             dni = request.body.dni;
             passwd = request.body.passwd;
             fecha = request.body.fecha;
@@ -374,7 +372,9 @@ function getDatosUsuario(request,response){
           mensaje: error.message,
         });
       } else {
-        if (results > 0 && (results[0].tipo="medico")) {
+        console.log(results[0].tipo)
+        if (results.length > 0 && (results[0].tipo=="medico")) {
+          console.log("Medico buscando a paciente")
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
             [idPaciente],
@@ -383,10 +383,12 @@ function getDatosUsuario(request,response){
                 console.log(error);
                 response.json({
                   correcto: 0,
-                  mensaje: error.message,
+                  mensaje: "Error",
                 });
               } else {
-                if (results > 0) {
+                
+                console.log(results.length > 0)
+                if (results.length > 0) {
                   response.json({
                     correcto: 1,
                     nombre: results[0].nombre_completo,
@@ -399,7 +401,7 @@ function getDatosUsuario(request,response){
                 }else{
                   response.json({
                     correcto: 0,
-                    mensaje: error.message,
+                    mensaje: "no hay resultados",
                   });
                 }
                
@@ -408,6 +410,7 @@ function getDatosUsuario(request,response){
           );
           
         }else{
+          console.log("Paciente comprobando sus datos")
           conexion.query(
             "SELECT * FROM Usuario WHERE id = ? ",
             [id],
@@ -419,7 +422,8 @@ function getDatosUsuario(request,response){
                   mensaje: error.message,
                 });
               } else {
-                if (results > 0) {
+                console.log(results.length > 0)
+                if (results.length > 0) {
                   response.json({
                     correcto: 1,
                     nombre: results[0].nombre_completo,
@@ -432,7 +436,7 @@ function getDatosUsuario(request,response){
                 }else{
                   response.json({
                     correcto: 0,
-                    mensaje: error.message,
+                    mensaje: "no hay resultados",
                   });
                 }
                
@@ -526,7 +530,8 @@ function getRecetas(request, response) {
           mensaje: error.message,
         });
       } else {
-        if (results > 0 && (results[0].tipo="medico")) {
+         console.log(results[0])
+        if (results.length > 0 && (results[0].tipo=="medico")) {
           conexion.query(
             "SELECT * FROM Receta WHERE id_paciente = ?",
             [idPaciente],
@@ -538,7 +543,7 @@ function getRecetas(request, response) {
                   mensaje: error.message,
                 });
               }
-        
+             
               if (results.length === 0) {
                 return response.json({
                   correcto: 0,
@@ -593,7 +598,7 @@ function getRecetas(request, response) {
                   mensaje: error.message,
                 });
               }
-        
+            console.log(results)
               if (results.length === 0) {
                 return response.json({
                   correcto: 0,
@@ -759,6 +764,94 @@ function getTipoUsuario(request,response){
           mensaje: "Este paciente no existe",
         });
       }})
+}
+
+function getSintomas(request, response) {
+  let tokenLogin = request.body.tokenLogin;
+  let id = request.body.id;
+  let idPaciente = request.body.idPaciente;
+
+  
+  if (!tokenLogin || !checkTokenJWT(tokenLogin, id)) {
+    return response.json({ correcto: 0 });
+  }
+
+  conexion.query(
+    "SELECT * FROM Usuario WHERE id = ? ",
+    [id],
+    async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        response.json({
+          correcto: 0,
+          mensaje: error.message,
+        });
+      } else {
+        if (results.length > 0 && (results[0].tipo="medico")) {
+          conexion.query(
+            "SELECT * FROM Sintomatologia WHERE id_paciente = ?",
+            [idPaciente],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }else{
+                if(results.length > 0){
+                  let sintomas = []
+                  for (const sintoma in results) {
+                   sintomas[sintoma] = results[sintoma]
+                  }
+                  return response.json({
+                    correcto: 1,
+                    sintomas: sintomas,
+                  });
+
+                }else{
+                  return response.json({
+                    correcto: 0,
+                    mensaje: "Este paciente no tiene sintomas",
+                  });
+                }
+              }})
+        }else{
+          conexion.query(
+            "SELECT * FROM Sintomatologia WHERE id_paciente = ?",
+            [id],
+            async function (error, results, fields) {
+              if (error) {
+                console.log(error);
+                return response.json({
+                  correcto: 0,
+                  mensaje: error.message,
+                });
+              }else{
+                if(results.length > 0){
+                  let sintomas = []
+                  for (const sintoma in results) {
+                   sintomas[sintoma] = results[sintoma]
+                  }
+                  return response.json({
+                    correcto: 1,
+                    sintomas: sintomas,
+                  });
+
+                }else{
+                  return response.json({
+                    correcto: 0,
+                    mensaje: "Este paciente no tiene sintomas",
+                  });
+                }
+              }})
+              }
+        }})
+
+
+
+
+  
 }
 
 // app.del('/', function(req, res) {
