@@ -469,7 +469,7 @@ function getTipoUsuario(request,response){
         });
       }
       if (results.length > 0) {
-          console.log(results[0].tipo)
+          console.log(results[0])
           return response.json({
             correcto: 1,
             tipoUsuario: results[0].tipo
