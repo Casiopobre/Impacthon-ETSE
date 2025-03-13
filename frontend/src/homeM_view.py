@@ -1,138 +1,7 @@
-<<<<<<< HEAD
-import flet as ft
-import session_funcs as sf
-import shared
-
-
-def GestionarPacienteTab(page):
-    codigo_field = ft.TextField(label="Codigo del Paciente", width=280)
-    gestionar_button = ft.ElevatedButton(text="Gestionar Paciente", width=200)
-    qr_button = ft.IconButton(icon=ft.icons.ACCESS_ALARM, width=70)
-    return ft.Column(
-        [
-            codigo_field,
-            ft.Row(
-                [
-                    gestionar_button,
-                    qr_button
-                ],
-                alignment= ft.MainAxisAlignment.CENTER
-            )
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20
-    )
-
-def AnadirPacienteTab(page):
-    name_field = ft.TextField(label="Nombre", width=280)
-    apellido1_field = ft.TextField(label="Apellido1", width=200)
-    apellido2_field = ft.TextField(label="Apellido2", width=200)
-    dni_field = ft.TextField(label="DNI", width=280)
-    birth_field = ft.TextField(label="Fecha nacimiento", width=280)
-    phone_field = ft.TextField(label="Número teléfono", width=280)
-    password_field = ft.TextField(label="Contraseña", password=True, width=280)
-    password_confirmation_field = ft.TextField(label="Confirmar Contraseña", password=True, width=280)
-
-    register_button = ft.ElevatedButton(
-        text="Registrarse",
-        on_click=lambda e: sf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
-    )
-
-    return ft.Column(
-        [
-            name_field,
-            ft.Row(
-                [
-                    apellido1_field,
-                    apellido2_field
-                ],
-                alignment=ft.MainAxisAlignment.CENTER
-            ),
-            dni_field,
-            birth_field,
-            phone_field,
-            password_field,
-            password_confirmation_field,
-            register_button,
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20
-    )
-
-def build_homeM_view(page: ft.Page):
-    """
-    Construye la vista principal del paciente con la lista de medicamentos y espacio para el calendario.
-    """
-    page.title = "Mi Medicación"
-    
-    # Top navigation bar
-    profile_name = "Juan Pérez"  # This would come from actual user data
-    Vis = ft.Container()
-    if (page.route == "/homem"):
-        Vis.content = ft.Text(value="Aqui no hay nada todavía manin")
-    elif (page.route == "/homem/ges"):
-        Vis.content = GestionarPacienteTab(page)
-    elif (page.route == "/homem/an"):
-        Vis.content=AnadirPacienteTab(page)
-
-
-    def GestionClick(e):
-        page.go("/homem/ges", skip_route_change_event= True)
-    def AnadirClick(e):
-        page.go("/homem/an", skip_route_change_event= True)
-
-
-    boton_ges = ft.TextButton(text="Gestionar Paciente",on_click= GestionClick)
-    boton_an = ft.TextButton(text="Añadir Pacientes", on_click= AnadirClick)
-    nav_bar = ft.Row(
-        controls=[
-            boton_ges,
-            boton_an,
-            ft.PopupMenuButton(
-                icon=ft.icons.DOUBLE_ARROW,
-                icon_color=ft.colors.WHITE,
-                tooltip="Cambiar perfil",
-                items = [
-                    ft.PopupMenuItem(text = "Cambiar perfil"),
-                    ft.PopupMenuItem(),  # divider
-                    ft.PopupMenuItem(text="Ajustes")
-                ]
-            ),
-            # ft.Spacer(),
-            ft.Text(profile_name, color=ft.colors.WHITE, size=16),
-            ft.Container(
-                content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=30, color=ft.colors.WHITE),
-                margin=ft.margin.only(left=10)
-            ),
-        ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-    )
-
-
-    # Update layout when window size changes
-    page.on_resize = lambda _: page.update()
-    # Main view
-    return ft.View(
-        route= page.route,
-        controls=[
-            # AppBar with navigation
-            ft.AppBar(
-                title=ft.Text("Home Page"),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
-                actions=[nav_bar],
-            ),
-            Vis
-        ],
-    )
-    
-
-# Update main.py to include this route
-=======
 import flet as ft
 import homeM_funcs as hf
 import shared
+from calendario import Calendario
 
 def GestionarPacienteTab(page):
     codigo_field = ft.TextField(label="Codigo del Paciente", width=280)
@@ -159,7 +28,7 @@ def GestionarPacienteTab(page):
     )
 
 def AnadirPacienteTab(page):
-    name_field = ft.TextField(label="Nombre completo", width=280)
+    name_field = ft.TextField(label="Nombre Completo", width=280)
     dni_field = ft.TextField(label="DNI", width=280)
     birth_field = ft.TextField(label="Fecha nacimiento", width=280)
     phone_field = ft.TextField(label="Número teléfono", width=280)
@@ -171,19 +40,23 @@ def AnadirPacienteTab(page):
         on_click=lambda e: hf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
     )
 
-    return ft.Column(
-        [
-            name_field,
-            dni_field,
-            birth_field,
-            phone_field,
-            password_field,
-            password_confirmation_field,
-            register_button,
+    return ft.Row (
+        [ft.Column(
+            [
+                name_field,
+                dni_field,
+                birth_field,
+                phone_field,
+                password_field,
+                password_confirmation_field,
+                register_button,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20
+            )
         ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=20
+        alignment=ft.MainAxisAlignment.CENTER
     )
 
 def build_homeM_view(page: ft.Page):
@@ -206,18 +79,22 @@ def build_homeM_view(page: ft.Page):
     def AnadirClick(e):
         page.go("/homem/an")
 
-
-    boton_ges = ft.TextButton(text="Gestionar Paciente",on_click= GestionClick)
-    boton_an = ft.TextButton(text="Añadir Pacientes", on_click= AnadirClick)
+    estilo = ft.ButtonStyle(color=ft.colors.WHITE)
+    boton_ges = ft.TextButton(text="Gestionar Paciente",style=estilo,on_click= GestionClick)
+    boton_an = ft.TextButton(text="Añadir Pacientes",style=estilo, on_click= AnadirClick)
     nav_bar = ft.Row(
         controls=[
             boton_ges,
             boton_an,
-            ft.IconButton(
+            ft.PopupMenuButton(
                 icon=ft.icons.DOUBLE_ARROW,
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
-                on_click=lambda e: print("Switch profile clicked")
+                items = [
+                    ft.PopupMenuItem(text = "Cerrar Sesion"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(text="Ajustes")
+                ]
             ),
             # ft.Spacer(),
             ft.Text(profile_name, color=ft.colors.WHITE, size=16),
@@ -239,7 +116,7 @@ def build_homeM_view(page: ft.Page):
             # AppBar with navigation
             ft.AppBar(
                 title=ft.Text("Home Page"),
-                bgcolor=ft.colors.DEEP_ORANGE_800,
+                bgcolor=shared.SERGAS_1_HEX,
                 actions=[nav_bar],
             ),
             Vis
@@ -300,7 +177,7 @@ def GestionarPacienteObtenido(page, id_paciente):
                     ft.Text(f"Edad: {patient_data['edad']} años"),
                     ft.Text(f"Fecha nacimiento: {patient_data['fecha_nacimiento']}"),
                     ft.Text(f"Teléfono: {patient_data['num_tlf']}"),
-                    ft.Container(height=20),  # Spacer
+                    ft.Container(height=5),  # Spacer
                     ft.ElevatedButton(
                         "Modificar datos",
                         icon=ft.icons.EDIT,
@@ -308,35 +185,56 @@ def GestionarPacienteObtenido(page, id_paciente):
                         width=200
                     )
                 ],
-                spacing=10,
+                spacing=5,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
             ),
-            padding=20,
+            padding=5,
             width=300
         ),
         elevation=4
     )
     
     # Calendar placeholder
+    calendario = Calendario(page)
+
+    calendar_container = ft.Container(
+        content=(
+            ft.Column(
+                [
+                    ft.Row(
+                        [
+                            calendario.navigation_row
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+                        
+                    ),
+                    calendario.get_calendar_view()
+            ],
+            alignment=ft.MainAxisAlignment.CENTER)
+        ),
+        padding=20,
+        expand=False,
+        width=400
+    )
     calendar_placeholder = ft.Container(
         content=ft.Column(
             controls=[
-                ft.Text("Calendario", weight=ft.FontWeight.BOLD, size=16),
+                calendar_container,
                 ft.Container(
                     content=ft.Text("Calendario de recetas del paciente",
                                    text_align=ft.TextAlign.CENTER),
                     border=ft.border.all(1, ft.colors.GREY_400),
                     border_radius=8,
-                    padding=20,
-                    height=200,
-                    width=300,
+                    padding=10,
+                    height=190,
+                    width=400,
                     alignment=ft.alignment.center
                 )
             ],
-            spacing=10
+            spacing=5
         ),
         margin=ft.margin.only(top=20),
-        width=300
+        width=400
     )
     
     # Left column with profile and calendar
@@ -406,11 +304,12 @@ def GestionarPacienteObtenido(page, id_paciente):
                     scroll=ft.ScrollMode.AUTO
                 ) if medication_items else ft.Text("No hay medicaciones registradas")
             ],
-            spacing=10
+            spacing=10,
+            scroll=ft.ScrollMode.AUTO
         ),
         padding=20,
         border=ft.border.all(1, ft.colors.GREY_300),
-        border_radius=10,
+        border_radius=5,
         expand=True
     )
     
@@ -446,4 +345,3 @@ def GestionarPacienteObtenido(page, id_paciente):
             )
         ]
     )
->>>>>>> ce9c9db4540d8f87cd0baaba7c931685d10d47d3
