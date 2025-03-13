@@ -27,7 +27,7 @@ def main(page: ft.Page):
         "/homem/an",
         "/homep/sintomas"
     ]
-    
+    page.go("/none")
     page.route = "/none"
     # Helper function to check if a route is a valid temporary patient route
     #asda
@@ -50,39 +50,7 @@ def main(page: ft.Page):
     
 
     # Función para construir la vista de síntomas
-    def build_sintomas_view():
-        def on_sintoma_selected(e):
-            print(f"{e.control.text} seleccionado")
-            page.go("/homep")
-
-        return ft.View(
-            route="/sintomas",
-            controls=[
-                ft.AppBar(
-                    title=ft.Text("Síntomas"),
-                    bgcolor=ft.colors.DEEP_ORANGE_800,
-                ),
-                ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),
-                ft.GridView(
-                    controls=[
-                        ft.ElevatedButton("Dolor de cabeza", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Fiebre", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Tos", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Cansancio", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Dolor muscular", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Mareos", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Náuseas", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Vómito", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Diarrea", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Estreñimiento", on_click=on_sintoma_selected),
-                        ft.ElevatedButton("Congestión nasal", on_click=on_sintoma_selected),
-                    ],
-                    max_extent=200,
-                    spacing=10,
-                    run_spacing=10,
-                )
-            ],
-        )
+    
 
         
     def type_checker(page):
@@ -103,6 +71,7 @@ def main(page: ft.Page):
     
         # Check for session token        
         if page.client_storage.get("sessionToken"):
+            print("Hay token")
             if e.route in routes:
                 if e.route.startswith("/session"):
                     # redirigimos al home correspondiente
@@ -115,8 +84,8 @@ def main(page: ft.Page):
                     else:
                         to_home_redirect(page)
                         
-                # elif e.route == "/homep/sintomas":
-                #     page.views.append(build_sintomas_view())
+                elif e.route == "/homep/sintomas":
+                     page.views.append(homeP_view.build_symptom_menu_view(page))
                 elif e.route.startswith("/homem"):
                     if type_checker(page) == "medico":
                         # View del home del médico
