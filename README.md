@@ -14,7 +14,8 @@ Presenta una interfaz sencilla con el objetivo de llegar al mayor público posib
 !CAPTURA DE PANTALLA DE LA WEB!
 
 ## Como funciona?
-== EZEQUIEL EXPLICA == \
+La aplicación está desarrollada en el framework de cliente flet, para permitirnos exportarlo a diferentes plataformas. \
+La aplicación se conecta a nuestra API desarrollada en NodeJS que se conecta a la base de datos MySQL. \
 Para la base de datos utilizamos la CIMA REST API de la AEMPS para obtener la información sobre los medicamentos.
 
 ## Instalación
