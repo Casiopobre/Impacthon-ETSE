@@ -12,6 +12,8 @@ import homeM_funcs  # Import to access temp_patient_routes
 def main(page: ft.Page):
     page.adaptive = True
     page.title = "Iniciar sesión"
+    page.favicon = "frontend/src/assets/icon.png"
+    page.icon = "frontend/src/assets/icon.png"
 
     page.pub_static_dir = "frontend/src/assets" 
     
@@ -29,7 +31,7 @@ def main(page: ft.Page):
     page.launch_url = "/none"
     page.go("/none")
     # Helper function to check if a route is a valid temporary patient route
-    #asda
+    #asda 
     
     def is_valid_temp_patient_route(route):
         if route.startswith("/homem/ges"):

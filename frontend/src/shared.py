@@ -22,5 +22,5 @@ SERGAS_5_HSLA = "hsla(0, 0, 94, 1)"
 
 def logout(page: ft.Page):
     page.client_storage.clear()
-    page.launch_url = "/session/login"
+    page.go("/session/login")
     page.go("/session/login")

@@ -40,11 +40,8 @@ def AnadirPacienteTab(page):
     password_field = ft.TextField(label="Contraseña", password=True, width=280)
     password_confirmation_field = ft.TextField(label="Confirmar Contraseña", password=True, width=280)
 
-    def show_code_dialog(page):
-        # This will hold the text that would be received from server
-        code_text = hpf.get_otp_key(page)
-        
-        # Create placeholder for future QR code implementation
+
+    def show_registration_dialog(page, password, code_text):
         qr_placeholder = ft.Container(
             width=200,
             height=200,
@@ -57,10 +54,9 @@ def AnadirPacienteTab(page):
             ], alignment=ft.MainAxisAlignment.CENTER)
         )
         
-        # Create text display for code
         code_display = ft.Container(
             content=ft.Text(
-                code_text,
+                f"Contraseña: {password}",
                 size=24,
                 weight=ft.FontWeight.BOLD,
                 text_align=ft.TextAlign.CENTER,
@@ -69,21 +65,33 @@ def AnadirPacienteTab(page):
             alignment=ft.alignment.center,
         )
         
-
-
+        # Create text display for code
+        pwd_display = ft.Container(
+            content=ft.Text(
+                f"Contraseña: {code_text}",
+                size=24,
+                weight=ft.FontWeight.BOLD,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            margin=ft.margin.only(top=20, bottom=20),
+            alignment=ft.alignment.center,
+        )
+        
         # Create the dialog
         dialog = ft.AlertDialog(
             title=ft.Row([
-                ft.Text("Mi Código de Acceso", weight=ft.FontWeight.BOLD),
+                ft.Text("Información de acceso", weight=ft.FontWeight.BOLD),
                 ft.IconButton(
-                    icon=ft.icons.CLOSE
+                    icon=ft.icons.CLOSE,
+                    on_click=lambda e: close_dialog(e, dialog, page)
                 ),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             content=ft.Column([
                 qr_placeholder,
                 code_display,
+                pwd_display,
                 ft.Text(
-                    "Este código permite a los profesionales médicos acceder a tu información",
+                    "Guarde esta contraseña para acceder a la aplicación",
                     text_align=ft.TextAlign.CENTER,
                     size=14,
                     color=ft.colors.GREY_700,
@@ -92,25 +100,25 @@ def AnadirPacienteTab(page):
             actions_alignment=ft.MainAxisAlignment.END,
         )
         
-        print("--------")
-        print("--------")
-        print(code_text)
-        print("--------")
-        print("--------")
+        def close_dialog(e, dialog, page):
+            dialog.open = False
+            page.update()
         
         # Show the dialog
         page.overlay.append(dialog)
         dialog.open = True
         page.update()
-    
+
+
+
     def register_return(page: ft.Page):
-        worked = hf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
-
-        if worked:
-            show_code_dialog(page)
-
-
-        # page.go("/homem/ges")
+        worked = hf.register_user(page, dni_field=dni_field, fecha_nac_field=birth_field, name_field=name_field, num_tlf_field=phone_field)
+        print("worked")
+        print(worked)
+        print("worked")
+        print("worked")
+        if worked[0]:
+            show_registration_dialog(page, worked[1], worked[2])
 
 
     register_button = ft.ElevatedButton(
@@ -145,7 +153,7 @@ def build_homeM_view(page: ft.Page):
     """
     page.title = "Título genérico"
     
-    profile_name = "nombre"  # This would come from actual user data
+    profile_name = "Médico"  # This would come from actual user data
     Vis = ft.Container()
     
     if (page.route == "/homem/ges"):

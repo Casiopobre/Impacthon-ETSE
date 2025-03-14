@@ -147,13 +147,26 @@ def register_user(page: ft.Page, dni_field, name_field, fecha_nac_field, num_tlf
     # Generate random 3 letter password
     password = ''.join(random.choices(string.ascii_letters, k=3))
     # AJUSTAR !!!!
-    response = requests.post("http://"+ shared.SERVER_IP +":8080/createAct", data={
+    response = requests.post("http://"+ shared.SERVER_IP +":8080/createActMedico", json={
+        "id": page.client_storage.get("id"),
+        "tokenLogin": page.client_storage.get("sessionToken"),
         "dni": dni_field.value,
         "passwd": password,
-        "fecha_nac": fecha_nac_field.value,
-        "nombreCompleto": name_field.value,  # Replace with actual value if available
-        "num_tlf": num_tlf_field.value  # Replace with actual value if available
+        "fecha": fecha_nac_field.value,
+        "nombreCompleto": name_field.value,  
+        "num_tlf": num_tlf_field.value  
     }).json()
+
+    print(response)
+    print("---------------")
+    print("---------------")
+    print(dni_field.value)
+    print(password)
+    print(fecha_nac_field.value)
+    print(name_field.value)
+    print(num_tlf_field.value)
+    print("---------------")
+    print("---------------")
 
     if response.get("correcto") == 0:
         # error
@@ -161,21 +174,17 @@ def register_user(page: ft.Page, dni_field, name_field, fecha_nac_field, num_tlf
         page.controls.append(page.snack_bar)
         page.snack_bar.open = True
         page.update()
-        return
+        return [False, None]
     elif response.get("correcto") == 1:
-        token = response.get("tokenLogin")
-        # Save token to local storage
-        page.client_storage.set("sessionToken", token)
-        # Redireccion a home
-        page.go("/homep")
-        return 
+        # Return success
+        return [True, password, response.get("token")]
     else:
         page.snack_bar = ft.SnackBar(ft.Text("Credenciales incorrectas"))
         page.controls.append(page.snack_bar)
         page.snack_bar.open = True
         page.update()
-    page.update()
-
+        return [False, None]
+    
 
 def calculate_age(birthdate_str):
     """

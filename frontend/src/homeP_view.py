@@ -211,7 +211,7 @@ def build_homeP_view(page: ft.Page):
             bgcolor=shared.SERGAS_1_HEX,
         )
     )
-    profile_name = "Nombre generico"
+    profile_name = "Paciente"
     nav_bar = ft.Row(
         controls=[
             boton_codigo,
