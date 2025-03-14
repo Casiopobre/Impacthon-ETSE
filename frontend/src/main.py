@@ -1,5 +1,4 @@
 import flet as ft
-import cipher as cp
 import datetime
 import requests
 from calendario import Calendario
