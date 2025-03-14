@@ -176,8 +176,8 @@ class Calendario:
                         ft.Column(
                             [
                                 ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16),
-                                ft.Text(f"Dosis: {medication["dose"]} mg"),
-                                ft.Text(f"Intervalo: Cada {medication["interval"]} horas"),
+                                ft.Text(f"Dosis: {medication['dose']} mg"),
+                                ft.Text(f"Intervalo: Cada {medication['interval']} horas"),
                             ],
                             spacing=5,
                             width=400
