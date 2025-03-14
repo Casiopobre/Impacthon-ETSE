@@ -4,8 +4,8 @@ import shared
 
 def NormalLogin(page):
         colorines = ft.TextStyle(color=ft.Colors.WHITE)
-        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
         
         otp_button = ft.ElevatedButton(
             text="Inicio de sesión con código de un solo uso",
@@ -51,7 +51,7 @@ def NormalLogin(page):
 
 def OptLogin(page):
         colorines = ft.TextStyle(color=ft.Colors.WHITE)
-        otp_field = ft.TextField(label="Código de un solo uso", width=280,label_style=colorines, border_color=ft.Colors.WHITE)
+        otp_field = ft.TextField(label="Código de un solo uso", width=280,label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
 
         login_button = ft.ElevatedButton(
             text="Iniciar sesión con OTP"
@@ -83,12 +83,12 @@ def OptLogin(page):
 
 def Register(page):
         colorines = ft.TextStyle(color=ft.Colors.WHITE)
-        name_field = ft.TextField(label="Nombre completo", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        birth_field = ft.TextField(label="Fecha nacimiento", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        phone_field = ft.TextField(label="Número teléfono", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
-        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE)
+        name_field = ft.TextField(label="Nombre completo", width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        birth_field = ft.TextField(label="Fecha nacimiento", width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        phone_field = ft.TextField(label="Número teléfono", width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
+        confirm_password_field = ft.TextField(label="Contraseña", password=True, width=280, label_style=colorines, border_color=ft.Colors.WHITE, color=ft.Colors.WHITE)
 
         register_button = ft.ElevatedButton(
             text="Registrarse",
