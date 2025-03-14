@@ -82,7 +82,7 @@ def build_homeP_view(page: ft.Page):
     else:
         medication_list.controls.append(
             ft.Container(
-                content=ft.Text("No hay medicamentos para mostrar", 
+                content=ft.Text("No más hay medicamentos para mostrar", 
                                 style=ft.TextStyle(italic=True)),
                 alignment=ft.alignment.center,
                 padding=20
@@ -243,7 +243,7 @@ def build_homeP_view(page: ft.Page):
         route="/homep",
         controls=[
             ft.AppBar(
-                title=ft.Text("Mi medicaciooooooooooooon"),
+                title=ft.Text("Mi medicacion"),
                 bgcolor='#034C8C',
                 actions=[nav_bar],
                       ),
