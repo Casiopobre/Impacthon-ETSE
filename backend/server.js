@@ -272,7 +272,7 @@ async function crearCuentaMedico(request, response) {
             num_tlf = request.body.num_tlf;
             let encryptedPasswd = await bcrypt.hash(passwd, saltRounds);
 
-            if (dni && passwd && edad && nombreCompleto && num_tlf) {
+            if (dni && passwd && fecha && nombreCompleto && num_tlf) {
               conexion.query(
                 "INSERT into Usuario (dni,fecha_nac,nombre_completo,passwd,num_tlf,tipo) values(?,?,?,?,?,?)",
                 [
