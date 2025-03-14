@@ -152,6 +152,7 @@ class Calendario:
                 ft.ElevatedButton("Cancelar", on_click=cerrar),
                 ft.ElevatedButton("Guardar", on_click=save_data)
             ],
+            width=700
         )
         self.page.overlay.append(dialog)
         dialog.open = True
@@ -175,21 +176,21 @@ class Calendario:
                         ft.Icon(ft.icons.MEDICATION, size=40, color=ft.colors.BLUE_400),
                         ft.Column(
                             [
-                                ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16),
+                                ft.Text(medication["name"], weight=ft.FontWeight.BOLD, size=16,no_wrap=False),
                                 ft.Text(f"Dosis: {medication['dose']} mg"),
                                 ft.Text(f"Intervalo: Cada {medication['interval']} horas"),
                             ],
                             spacing=5,
-                            width=400
+                            width=500
                         ),
                     ],
-                    width=400
+                    width=500
                 ),
                 padding=15,
-                width=400
+                width=700
             ),
             margin=ft.margin.only(bottom=10),
-            width=400,
+            width=700,
         )
     
     def open_day_data(self, date_key):
@@ -201,7 +202,7 @@ class Calendario:
             dialog1.open = False 
             self.page.update()
         medication_list = ft.ListView(
-            spacing=10, padding=20, expand=True, width=400, auto_scroll=True,
+            spacing=10, padding=20, expand=True, width=700, auto_scroll=True,
         )
         medications = self.daily_data.get(date_key, {})
         for meds in medications.get("medications", []):
@@ -216,12 +217,12 @@ class Calendario:
                     ft.Container(
                         content=medication_list,
                         padding=20,
-                        width= 400,
+                        width=700,
                     ),
                     ft.Text(value="Sintomas")
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
-                width=400,
+                width=700,
                 scroll=ft.ScrollMode.AUTO
             ),
             actions= [
