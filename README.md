@@ -10,7 +10,7 @@ Proyecto desarrollado durante **[IMPACT-THON USC](https://pasoinfousc.com/hackat
 + **Calendario de medicamentos y síntomas**: Un sistema de calendario donde se visualizan las fechas y horas de toma de medicamentos, así como los registros de los síntomas.
 + **Lista de medicamentos previstos para hoy**: Una lista que muestra los medicamentos programados para el día actual, ayudando a los usuarios a no olvidar ningúna dosis.
 
-!CAPTURA DE PANTALLA DE LA WEB!
+![](home_paciente.png)
 
 ## Como funciona?
 La aplicación está desarrollada en el framework de cliente Flet, lo que permite exportarla a diferentes plataformas como web, Android y Windows.
@@ -54,6 +54,7 @@ Para que cualquier usuario pueda ejecutar la aplicacion, tiene que seguir estos 
    Se pueden visualizar las fechas de toma de medicamentos y el historial de síntomas en un calendario interactivo.
 5. **Acceso de profesionales sanitarios**
    Los médicos pueden acceder a los datos del paciente y proporcionar recomendaciones basadas en la evolución de sus síntomas. Además, basándose en los datos recopilados, la aplicacion puede generar reportes y gráficos para facilitar la toma de decisiones médicas.
+![](vista_med.png)
    
 ## Licencias
 + Código fuente: Este software está licenciado bajo una licencia de código abierto, permitiendo su uso, modificación y distribución bajo ciertas condiciones.
