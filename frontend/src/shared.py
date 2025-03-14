@@ -1,3 +1,4 @@
+import flet as ft
 SERVER_IP = "143.47.54.76"
 
 SERGAS_1_HEX = "#034C8C"
@@ -17,3 +18,9 @@ SERGAS_2_HSLA = "hsla(203, 61, 61, 1)"
 SERGAS_3_HSLA = "hsla(203, 25, 36, 1)"
 SERGAS_4_HSLA = "hsla(197, 95, 38, 1)"
 SERGAS_5_HSLA = "hsla(0, 0, 94, 1)"
+
+
+def logout(page: ft.Page):
+    page.client_storage.clear()
+    page.launch_url = "/session/login"
+    page.go("/session/login")

@@ -51,19 +51,18 @@ def NormalLogin(page):
 
 def OptLogin(page):
         colorines = ft.TextStyle(color=ft.Colors.WHITE)
-        dni_field = ft.TextField(label="DNI", width=280, label_style=colorines, border_color=ft.Colors.WHITE)
         otp_field = ft.TextField(label="Código de un solo uso", width=280,label_style=colorines, border_color=ft.Colors.WHITE)
 
         login_button = ft.ElevatedButton(
-            text="Iniciar sesión con OTP",
-            on_click=lambda e : sf.otplogin(page, dni_field, otp_field)
+            text="Iniciar sesión con OTP"
+            # ,
+            # on_click=lambda e : sf.otplogin(page, dni_field, otp_field)
         )
 
         return ft.Row([
             ft.Container(
                 ft.Column(
                     [
-                        dni_field,
                         otp_field,
                         login_button,
                     ],
@@ -170,6 +169,7 @@ def build_view(page: ft.Page):
                 bgcolor=shared.SERGAS_1_HEX,
             ),
             content_container
-        ]
+        ],
+        adaptive=True
     )
 

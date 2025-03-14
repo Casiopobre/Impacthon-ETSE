@@ -27,8 +27,8 @@ def main(page: ft.Page):
         "/homem/an",
         "/homep/sintomas"
     ]
+    page.launch_url = "/none"
     page.go("/none")
-    page.route = "/none"
     # Helper function to check if a route is a valid temporary patient route
     #asda
     
@@ -65,7 +65,8 @@ def main(page: ft.Page):
     # Función para manejar el cambio de ruta
     def reroute(e):
         page.views.clear()
-        
+        page.adaptive = True
+        page.title = "CuidaMed"
         # Check for temporary patient routes first
         
     
@@ -79,13 +80,16 @@ def main(page: ft.Page):
                     
                 elif e.route.startswith("/homep"):
                     if type_checker(page) == "paciente":
+                        if e.route == "/homep/sintomas":
+                            page.views.append(homeP_view.build_symptom_menu_view(page))
+                        else:
                         # View del home del pacientee
-                        page.views.append(homeP_view.build_homeP_view(page))
+                            page.views.append(homeP_view.build_homeP_view(page))
+                    
                     else:
                         to_home_redirect(page)
                         
-                elif e.route == "/homep/sintomas":
-                     page.views.append(homeP_view.build_symptom_menu_view(page))
+                
                 elif e.route.startswith("/homem"):
                     if type_checker(page) == "medico":
                         # View del home del médico

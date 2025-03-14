@@ -220,7 +220,7 @@ def build_homeP_view(page: ft.Page):
                 icon_color=shared.SERGAS_5_HEX,
                 tooltip="Cambiar perfil",
                 items = [
-                    ft.PopupMenuItem(text = "Cerrar Sesion"),
+                    ft.PopupMenuItem(text = "Cerrar Sesion", on_click=lambda _: shared.logout(page)),
                     ft.PopupMenuItem(),  # divider
                     ft.PopupMenuItem(text="Ajustes")
                 ]
@@ -286,7 +286,6 @@ def build_symptom_menu_view(page: ft.Page):
         route="homep/sintomas",
         controls=[
             ft.AppBar(
-                title=ft.Text("Síntomas"),
                 bgcolor=ft.colors.DEEP_ORANGE_800,
             ),
             ft.Text("Selecciona los síntomas que tienes hoy", size=20, weight=ft.FontWeight.BOLD),

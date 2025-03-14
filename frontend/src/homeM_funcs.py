@@ -3,6 +3,8 @@ import requests
 import time
 import shared
 from datetime import datetime, timedelta
+import random
+import string
 
 # Store temporary routes with expiration times
 temp_patient_routes = {}
@@ -139,20 +141,19 @@ def get_paciente_recetas(page: ft.Page, id_paciente):
         print(f"Exception fetching medications: {str(e)}")
         return []
 
-def register_user(page: ft.Page, dni_field, name_field, password_field, fecha_nac_field):
+def register_user(page: ft.Page, dni_field, name_field, fecha_nac_field, num_tlf_field):
     """Procesa el registro de un nuevo paciente."""
     
+    # Generate random 3 letter password
+    password = ''.join(random.choices(string.ascii_letters, k=3))
     # AJUSTAR !!!!
     response = requests.post("http://"+ shared.SERVER_IP +":8080/createAct", data={
         "dni": dni_field.value,
-        "passwd": password_field.value,
+        "passwd": password,
+        "fecha_nac": fecha_nac_field.value,
         "nombreCompleto": name_field.value,  # Replace with actual value if available
-        "num_tlf": "123456789"  # Replace with actual value if available
+        "num_tlf": num_tlf_field.value  # Replace with actual value if available
     }).json()
-
-    dni = dni_field.value
-
-    
 
     if response.get("correcto") == 0:
         # error
@@ -166,57 +167,14 @@ def register_user(page: ft.Page, dni_field, name_field, password_field, fecha_na
         # Save token to local storage
         page.client_storage.set("sessionToken", token)
         # Redireccion a home
-        page.go("/phome")
+        page.go("/homep")
         return 
     else:
-        page.snack_bar = ft.SnackBar(ft.Text("Credenciales incorrectas o usuario no encontrado"))
+        page.snack_bar = ft.SnackBar(ft.Text("Credenciales incorrectas"))
         page.controls.append(page.snack_bar)
         page.snack_bar.open = True
         page.update()
-
-    password = password_field.value
-    password_confirm = password_confirm_field.value
-    fecha_nac = fecha_nac_field.value
-
-    if password != password_confirm:
-        page.snack_bar = ft.SnackBar(ft.Text("Las contraseñas no coinciden"))
-        page.controls.append(page.snack_bar)
-        page.snack_bar.open = True
-        page.update()
-        return
-
-    if dni in users_db:
-        page.snack_bar = ft.SnackBar(ft.Text("El usuario ya existe"))
-        page.controls.append(page.snack_bar)
-        page.snack_bar.open = True
-        page.update()
-        return
-
-    # Se registra el usuario como Paciente.
-    users_db[dni] = {
-        "dni": dni,
-        "edad": edad,
-        "password": password,
-        "fecha_nacimiento": fecha_nac,
-        "tipo": "Paciente",
-        "nombre": f"Paciente {dni}"  # En este ejemplo usamos el DNI como parte del nombre
-    }
-    page.snack_bar = ft.SnackBar(ft.Text("Registrado exitosamente, por favor inicia sesión"))
-    page.controls.append(page.snack_bar)
-    page.snack_bar.open = True
-    
-    # Limpiar campos
-    dni_field.value = ""
-    edad_field.value = ""
-    password_field.value = ""
-    password_confirm_field.value = ""
-    fecha_nac_field.value = ""
-    
-    # Cambiar la pestaña a "Iniciar Sesión"
-    tabs = page.views[0].controls[0]
-    tabs.selected_index = 0
     page.update()
-
 
 
 def calculate_age(birthdate_str):

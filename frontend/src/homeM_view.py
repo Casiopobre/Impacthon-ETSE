@@ -1,5 +1,6 @@
 import flet as ft
 import homeM_funcs as hf
+import homeM_funcs as hpf
 import shared
 from calendario import Calendario
 
@@ -27,6 +28,10 @@ def GestionarPacienteTab(page):
         spacing=20
     )
 
+
+
+
+
 def AnadirPacienteTab(page):
     name_field = ft.TextField(label="Nombre Completo", width=280)
     dni_field = ft.TextField(label="DNI", width=280)
@@ -35,9 +40,84 @@ def AnadirPacienteTab(page):
     password_field = ft.TextField(label="Contraseña", password=True, width=280)
     password_confirmation_field = ft.TextField(label="Confirmar Contraseña", password=True, width=280)
 
+    def show_code_dialog(page):
+        # This will hold the text that would be received from server
+        code_text = hpf.get_otp_key(page)
+        
+        # Create placeholder for future QR code implementation
+        qr_placeholder = ft.Container(
+            width=200,
+            height=200,
+            bgcolor=ft.colors.GREY_300,
+            border_radius=10,
+            alignment=ft.alignment.center,
+            content=ft.Column([
+                ft.Icon(ft.icons.QR_CODE, size=100, color=ft.colors.GREY_800),
+                ft.Text("QR Code Placeholder", color=ft.colors.GREY_800)
+            ], alignment=ft.MainAxisAlignment.CENTER)
+        )
+        
+        # Create text display for code
+        code_display = ft.Container(
+            content=ft.Text(
+                code_text,
+                size=24,
+                weight=ft.FontWeight.BOLD,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            margin=ft.margin.only(top=20, bottom=20),
+            alignment=ft.alignment.center,
+        )
+        
+
+
+        # Create the dialog
+        dialog = ft.AlertDialog(
+            title=ft.Row([
+                ft.Text("Mi Código de Acceso", weight=ft.FontWeight.BOLD),
+                ft.IconButton(
+                    icon=ft.icons.CLOSE
+                ),
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            content=ft.Column([
+                qr_placeholder,
+                code_display,
+                ft.Text(
+                    "Este código permite a los profesionales médicos acceder a tu información",
+                    text_align=ft.TextAlign.CENTER,
+                    size=14,
+                    color=ft.colors.GREY_700,
+                ),
+            ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        
+        print("--------")
+        print("--------")
+        print(code_text)
+        print("--------")
+        print("--------")
+        
+        # Show the dialog
+        page.overlay.append(dialog)
+        dialog.open = True
+        page.update()
+    
+    def register_return(page: ft.Page):
+        worked = hf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
+
+        if worked:
+            show_code_dialog(page)
+
+
+        # page.go("/homem/ges")
+
+
     register_button = ft.ElevatedButton(
-        text="Registrarse",
-        on_click=lambda e: hf.register_user(page, dni_field, birth_field, password_field, password_field, phone_field)
+        text="Dar de alta",
+        icon=ft.icons.QR_CODE,
+        on_click=lambda e: register_return(page)
+
     )
 
     return ft.Row (
@@ -91,7 +171,7 @@ def build_homeM_view(page: ft.Page):
                 icon_color=ft.colors.WHITE,
                 tooltip="Cambiar perfil",
                 items = [
-                    ft.PopupMenuItem(text = "Cerrar Sesion"),
+                    ft.PopupMenuItem(text = "Cerrar Sesion", on_click=lambda e: shared.logout(page)),
                     ft.PopupMenuItem(),  # divider
                     ft.PopupMenuItem(text="Ajustes")
                 ]
@@ -115,7 +195,6 @@ def build_homeM_view(page: ft.Page):
         controls=[
             # AppBar with navigation
             ft.AppBar(
-                title=ft.Text("Home Page"),
                 bgcolor=shared.SERGAS_1_HEX,
                 actions=[nav_bar],
             ),
@@ -134,7 +213,7 @@ def GestionarPacienteObtenido(page, id_paciente):
     dni = hf.temp_patient_data[id_paciente].get("dni")
     email = hf.temp_patient_data[id_paciente].get("email")
     num_tlf = hf.temp_patient_data[id_paciente].get("numTlf")
-    edad = hf.calculate_age(fecha_nacimiento)
+    edad = hf.calculate_age(fecha_nacimiento.split(" ")[0])
      
     
     medications = hf.get_paciente_recetas(page, id_paciente)
